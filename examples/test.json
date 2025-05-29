@@ -1,0 +1,67 @@
+{
+	"taskGroups": [
+		{
+			"name": "gpu-task-group",
+			"taskSpec": {
+				"runnables": [
+					{
+						"container": {
+							"imageUri": "gcr.io/relman-yaffe/evo2",
+							"entrypoint": "/bin/bash",
+							"commands": [
+								"-c",
+								"bash /mnt/disks/share/scripts/run_evo.sh"
+							]
+						}
+					}
+				],
+				"environment": {
+					"variables": {
+						"JOB": "test-job",
+						"MODEL_NAME": "evo2_7b",
+						"OUTPUT_TYPES": "logits"
+					}
+				},
+				"volumes": [
+					{
+						"gcs": {
+							"remotePath": "relman-evo2"
+						},
+						"mountPath": "/mnt/disks/share"
+					}
+				],
+				"maxRetryCount": 0,
+				"maxRunDuration": "3600s"
+			},
+			"taskCount": 1
+		}
+	],
+	"allocationPolicy": {
+		"instances": [
+			{
+				"installGpuDrivers": true,
+				"policy": {
+					"machineType": "a3-highgpu-1g",
+					"bootDisk": {
+						"type": "pd-ssd",
+						"sizeGb": 100
+					},
+					"accelerators": [
+						{
+							"type": "nvidia-h100-80gb",
+							"count": 1
+						}
+					],
+					"provisioningModel": "SPOT"
+				}
+			}
+		]
+	},
+	"logsPolicy": {
+		"destination": "CLOUD_LOGGING"
+	},
+	"labels": {
+		"department": "creative",
+		"env": "testing"
+	}
+}

@@ -1,0 +1,9 @@
+ninja
+torch>=2.5.1,<=2.6.1
+transformer_engine[pytorch]==1.13.0
+numpy
+einops==0.8.0
+packaging
+rich
+tqdm
+PyYAML

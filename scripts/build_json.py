@@ -10,7 +10,8 @@ def main():
     parser.add_argument("--image_uri", required=True, help="The Docker image URI (e.g., \"gcr.io/relman-yaffe/evo2\").")
     parser.add_argument("--job_env", required=True, help="Value for the JOB environment variable.")
     parser.add_argument("--model_name_env", required=True, help="Value for the MODEL_NAME environment variable.")
-    parser.add_argument("--output_types_env", required=True, help="Value for the OUTPUT_TYPES environment variable.")
+    parser.add_argument("--include_embedding_env", action='store_true', help="Include embeddings in the output.")
+    parser.add_argument("--embedding_layers_env", default="", help="Space-separated list of embedding layers. Required if --include_embedding_env is set.")
     parser.add_argument("--run_script_path", required=True, help="Path to the execution script within the container (e.g., \"scripts/run_evo2.sh\").")
 
     # Optional arguments with defaults from test.json
@@ -22,6 +23,9 @@ def main():
     parser.add_argument("--max_retry_count", type=int, default=0, help="The maximum retry count for the task.")
 
     args = parser.parse_args()
+
+    if args.include_embedding_env and not args.embedding_layers_env:
+        parser.error("--embedding_layers_env is required when --include_embedding_env is set.")
 
     # Construct the command for the container
     # The script path is relative to the mount point /mnt/disks/share
@@ -47,9 +51,11 @@ def main():
                     ],
                     "environment": {
                         "variables": {
+                            "MNT_DIR": "/mnt/disks/share",
                             "JOB": args.job_env,
                             "MODEL_NAME": args.model_name_env,
-                            "OUTPUT_TYPES": args.output_types_env
+                            "INCLUDE_EMBEDDING": "true" if args.include_embedding_env else "false",
+                            "EMBEDDING_LAYERS": args.embedding_layers_env if args.include_embedding_env and args.embedding_layers_env else ""
                         }
                     },
                     "volumes": [

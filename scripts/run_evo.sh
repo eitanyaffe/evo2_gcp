@@ -35,6 +35,4 @@ if [ "$INCLUDE_EMBEDDING" = "true" ]; then
     fi
 fi
 
-echo "initial CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
-
 python3 $SCRIPTS_DIR/run_evo.py $SCRIPT_ARGS 2>&1 | tee $OUTPUT_DIR/run_evo.log

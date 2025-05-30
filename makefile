@@ -192,6 +192,8 @@ INPUT_FASTA_TEST?=examples/large_test.fasta
 READ_COUNT?=10
 READ_LENGTH?=1000000
 
+INPUT_FASTA_TEST_MEDIUM?=examples/medium_test.fasta
+
 # generate large fasta
 generate_fasta:
 	python3 utils/generate_fasta.py \
@@ -201,13 +203,26 @@ generate_fasta:
 
 # run evo on large fasta
 test_long:
-	make submit \
+	$(MAKE) submit \
 		INPUT_FASTA=$(INPUT_FASTA_TEST) \
 		JOB=evo-large \
 		INCLUDE_EMBEDDING=false \
+		MACHINE_TYPE=a3-highgpu-4g \
+		ACCELERATOR_COUNT=4 \
+		JOB_VERSION=v8
+
+# run evo on large fasta
+test_medium:
+	$(MAKE) generate_fasta \
+		INPUT_FASTA_TEST=$(INPUT_FASTA_TEST_MEDIUM) \
+		READ_LENGTH=100000
+	$(MAKE) submit \
+		INPUT_FASTA=$(INPUT_FASTA_TEST_MEDIUM) \
+		JOB=evo-medium \
+		INCLUDE_EMBEDDING=false \
 		MACHINE_TYPE=a3-highgpu-2g \
 		ACCELERATOR_COUNT=2 \
-		JOB_VERSION=v6
+		JOB_VERSION=v1
 
 #####################################################################################
 # replace codon
@@ -231,8 +246,9 @@ INPUT_FASTA_COMBINED?=examples/gyrA_combined.fasta
 
 # run evo on combined fasta
 test_combined:
-	make submit \
+	$(MAKE) submit \
 		INPUT_FASTA=$(INPUT_FASTA_COMBINED) \
 		JOB=evo-combined \
-		INCLUDE_EMBEDDING=false \
-		JOB_VERSION=v2
+		JOB_VERSION=v5
+download_combined:
+	$(MAKE) download JOB=evo-combined JOB_VERSION=v5

@@ -7,8 +7,6 @@ print(f"Found {num_devices} CUDA devices:")
 for i in range(num_devices):
     print(f"  Device {i}: {torch.cuda.get_device_name(i)}")
 
-print(f"CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', 'Not set')}")
-
 import os
 import numpy as np # Add numpy import here
 import json
@@ -85,10 +83,6 @@ def main():
         token_ids = evo_model.tokenizer.tokenize(sequence) # Tokenize the sequence into a list of token IDs
         # Convert to 2D tensor [1, sequence_length], set dtype to torch.int, and move to the model's device
         input_ids = torch.tensor(token_ids, dtype=torch.int).unsqueeze(0)
-
-        # Ensure input_ids is 2D [batch_size, sequence_length] for the model - This check is now redundant due to the line above
-        # if input_ids.ndim == 1:
-        #     input_ids = input_ids.unsqueeze(0)
 
         logits, embeddings = evo_model.forward(
             input_ids,

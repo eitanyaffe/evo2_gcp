@@ -31,6 +31,8 @@ def main():
     # The script path is relative to the mount point /mnt/disks/share
     container_command = f"bash /mnt/disks/share/{args.run_script_path}"
 
+    cuda_visible_devices = ",".join(map(str, range(args.accelerator_count)))
+
     job_config = {
         "taskGroups": [
             {
@@ -55,7 +57,8 @@ def main():
                             "JOB": args.job_env,
                             "MODEL_NAME": args.model_name_env,
                             "INCLUDE_EMBEDDING": "true" if args.include_embedding_env else "false",
-                            "EMBEDDING_LAYERS": args.embedding_layers_env if args.include_embedding_env and args.embedding_layers_env else ""
+                            "EMBEDDING_LAYERS": args.embedding_layers_env if args.include_embedding_env and args.embedding_layers_env else "",
+                            "CUDA_VISIBLE_DEVICES": cuda_visible_devices
                         }
                     },
                     "volumes": [

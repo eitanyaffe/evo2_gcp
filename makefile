@@ -207,13 +207,13 @@ test_long:
 		INCLUDE_EMBEDDING=false \
 		MACHINE_TYPE=a3-highgpu-2g \
 		ACCELERATOR_COUNT=2 \
-		JOB_VERSION=v3
+		JOB_VERSION=v6
 
 #####################################################################################
 # replace codon
 #####################################################################################
 
-INPUT_FASTA_WT?=examples/gyrA.fasta
+INPUT_FASTA_WT?=examples/gyrA_sensitive.fasta
 INPUT_FASTA_RESISTANT?=examples/gyrA_resistant.fasta
 CODON_POSITION?=83
 CODON_NEW?=ATC
@@ -226,4 +226,13 @@ replace_codon:
 		--new_codon $(CODON_NEW) \
 		--output_file $(INPUT_FASTA_RESISTANT)
 
-	
+# both gyrA sequences in one fasta file
+INPUT_FASTA_COMBINED?=examples/gyrA_combined.fasta
+
+# run evo on combined fasta
+test_combined:
+	make submit \
+		INPUT_FASTA=$(INPUT_FASTA_COMBINED) \
+		JOB=evo-combined \
+		INCLUDE_EMBEDDING=false \
+		JOB_VERSION=v2

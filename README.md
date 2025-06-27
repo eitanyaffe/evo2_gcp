@@ -7,7 +7,7 @@ This repository simplifies running the Evo2 model on Google Cloud, a suite of pu
 1.  **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install)**: `gcloud` and `gsutil` must be installed and authenticated.
 2.  **[Docker](https://docs.docker.com/engine/install/)**: The Docker daemon must be installed and running.
 3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
-4.  **GCP Project**: You need a Google Cloud Project with the Batch, Compute Engine, and Cloud Storage APIs enabled. See [google.md](./google.md) for setup details.
+4.  **GCP Project**: You need a Google Cloud Project with the Batch, Compute Engine, and Cloud Storage APIs enabled. See [google.md](./docs/google.md) for setup details.
 
 ## Quickstart: Installation and Setup
 
@@ -50,7 +50,7 @@ To see a full list of commands and their descriptions, run:
 evo_gcp
 ```
 
-In terms of implementation, `evo_gcp.py` is a user-friendly wrapper around a `makefile`. It reads variables from `config.mk` (such as `JOB`, `BUCKET_NAME`, etc.) and makes them available as command-line arguments (e.g., `--job`, `--bucket_name`). When you run a command like `evo_gcp submit --job test`, the script constructs and executes the corresponding `make` command (`make submit JOB=test`) behind the scenes. This provides a simpler interface without needing to know `make` syntax. For a detailed explanation of the underlying `makefile` implementation, see [makefile.md](./makefile.md).
+In terms of implementation, `evo_gcp.py` is a user-friendly wrapper around a `makefile`. It reads variables from `config.mk` (such as `JOB`, `BUCKET_NAME`, etc.) and makes them available as command-line arguments (e.g., `--job`, `--bucket_name`). When you run a command like `evo_gcp submit --job test`, the script constructs and executes the corresponding `make` command (`make submit JOB=test`) behind the scenes. This provides a simpler interface without needing to know `make` syntax. For a detailed explanation of the underlying `makefile` implementation, see [makefile.md](./docs/makefile.md).
 
 ## Running a Job: Step-by-Step
 

@@ -69,7 +69,7 @@ To run the model, submit a job with a name and an input FASTA file.
 
 ```bash
 # Submit a job and wait for it to complete
-evo_gcp submit --job my-first-job --input_fasta examples/test.fasta --wait
+evo_gcp submit --job my-first-run --input_fasta examples/gyrA_sensitive.fasta --wait
 ```
 
 The `--wait` flag makes the command block until the job finishes. If you run a job without it, you can monitor its status using the following commands.
@@ -81,7 +81,7 @@ List all active jobs:
 evo_gcp list_jobs
 ```
 
-View the remote files and status for a specific job:
+View the remote files for a specific job:
 ```bash
 evo_gcp show --job my-first-job
 ```
@@ -97,6 +97,59 @@ By default, results are downloaded to `jobs/<JOB_NAME>/output`. You can specify 
 evo_gcp download --job my-first-job --jobs_dir /path/to/your/jobs
 ```
 This would save results to `/path/to/your/jobs/my-first-job/output`.
+
+## Parameters
+
+You can customize the behavior of `evo_gcp` by modifying its parameters. There are two ways to set them:
+
+1.  **Global Configuration (`config.mk`)**: For settings that you want to apply to all jobs, edit the `config.mk` file. This is the best way to set project-wide defaults like your `GCP_PROJECT` or preferred `MACHINE_TYPE`.
+2.  **Command-Line Arguments**: For settings specific to a single command, use command-line flags (e.g., `--job <JOB_NAME>`). These arguments override the values in `config.mk` for that specific command.
+
+### Examples
+
+**Per-Job Change (Command-Line)**
+
+If you want to run a job with a specific input file without changing the default, use the `--input_fasta` flag:
+
+```bash
+evo_gcp submit --job my-sensitive-run --input_fasta examples/gyrA_sensitive.fasta
+```
+
+**Global Change (`config.mk`)**
+
+If you want to use a different model for all subsequent jobs, you can change the `MODEL_NAME` in `config.mk`:
+```makefile
+# in config.mk
+...
+MODEL_NAME?=evo2_40b
+...
+```
+Now, any `evo_gcp submit` command will use `evo2_40b` unless overridden by `--model_name`.
+
+### Available Parameters
+
+Here is a list of all available parameters, their `config.mk` variable, and their corresponding command-line flag.
+
+| Variable (`config.mk`) | Flag (`evo_gcp`)       | Description                                                 |
+| ---------------------- | ---------------------- | ----------------------------------------------------------- |
+| `IMAGE_NAME`           | `--image_name`         | Local Docker image name.                                    |
+| `CUDA_VERSION`         | `--cuda_version`       | Docker image CUDA version (see Dockerfile).                                  |
+| `GCP_PROJECT`          | `--gcp_project`        | GCP project ID.                                             |
+| `DOCKER_IMAGE`         | `--docker_image`       | Full Docker image name for Google Container Registry.       |
+| `DOCKER_TAG`           | `--docker_tag`         | Docker image tag.                                           |
+| `BUCKET_NAME`          | `--bucket_name`        | Google Cloud Storage bucket name.                           |
+| `LOCATION`             | `--location`           | GCP location for the bucket and batch jobs.                 |
+| `JOB`                  | `--job`                | A unique string identifier for a job.                       |
+| `JOB_VERSION`          | `--job_version`        | The job version, allowing the same job to be run multiple times. |
+| `INPUT_FASTA`          | `--input_fasta`        | The input FASTA file for a job.                             |
+| `WAIT`                 | `--wait`               | When used with `submit`, blocks until the job completes.    |
+| `MODEL_NAME`           | `--model_name`         | The Evo 2 model name to use.                                |
+| `INCLUDE_EMBEDDING`    | `--include_embedding`  | Whether to include embeddings in the output.                |
+| `EMBEDDING_LAYERS`     | `--embedding_layers`   | Specific layers to use for embeddings.                      |
+| `MACHINE_TYPE`         | `--machine_type`       | The GCP machine type for the job (e.g., `a3-highgpu-1g`).   |
+| `ACCELERATOR_TYPE`     | `--accelerator_type`   | The accelerator type (e.g., `nvidia-h100-80gb`).            |
+| `ACCELERATOR_COUNT`    | `--accelerator_count`  | The number of accelerators to attach.                       |
+| `JOBS_DIR`             | `--jobs_dir`           | The local directory for storing downloaded job results.     |
 
 ## Implementation Details
 

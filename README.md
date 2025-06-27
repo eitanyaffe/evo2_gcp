@@ -145,12 +145,16 @@ Here is a list of all available parameters and their descriptions.
 #### General evo parameters ####
 
 | Variable (`config.mk`) | Description                                                 |
+| ---------------------- | ----------------------------------------------------------- |
 | `MODEL_NAME`           | The Evo 2 model name to use.                                |
 | `MACHINE_TYPE`         | The GCP machine type for the job (e.g., `a3-highgpu-1g`).   |
 | `ACCELERATOR_TYPE`     | The accelerator type (e.g., `nvidia-h100-80gb`).            |
 | `ACCELERATOR_COUNT`    | The number of accelerators to attach.                       |
 
 #### Job-specific parameters ####
+
+| Variable (`config.mk`) | Description                                                 |
+| ---------------------- | ----------------------------------------------------------- |
 | `JOB`                  | A unique string identifier for a job.                       |
 | `JOB_VERSION`          | The job version, allowing the same job to be run multiple times. |
 | `INPUT_FASTA`          | The input FASTA file for a job.                             |

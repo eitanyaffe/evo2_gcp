@@ -137,7 +137,6 @@ Here is a list of all available parameters and their descriptions.
 | `CUDA_VERSION`         | Docker image CUDA version.                                  |
 | `GCP_PROJECT`          | GCP project ID.                                             |
 | `DOCKER_IMAGE`         | Full Docker image name for Google Container Registry.       |
-| `DOCKER_TAG`           | Docker image tag.                                           |
 | `BUCKET_NAME`          | Google Cloud Storage bucket name.                           |
 | `LOCATION`             | GCP location for the bucket and batch jobs.                 |
 | `JOB`                  | A unique string identifier for a job.                       |

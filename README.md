@@ -130,6 +130,8 @@ Now, any `evo_gcp submit` command will use `evo2_40b` unless overridden by the `
 
 Here is a list of all available parameters and their descriptions.
 
+#### Google and docker parameters ####
+
 | Variable (`config.mk`) | Description                                                 |
 | ---------------------- | ----------------------------------------------------------- |
 | `IMAGE_NAME`           | Docker image name.                                          |
@@ -139,16 +141,22 @@ Here is a list of all available parameters and their descriptions.
 | `DOCKER_IMAGE`         | Full Docker image name for Google Container Registry.       |
 | `BUCKET_NAME`          | Google Cloud Storage bucket name.                           |
 | `LOCATION`             | GCP location for the bucket and batch jobs.                 |
+
+#### General evo parameters ####
+
+| Variable (`config.mk`) | Description                                                 |
+| `MODEL_NAME`           | The Evo 2 model name to use.                                |
+| `MACHINE_TYPE`         | The GCP machine type for the job (e.g., `a3-highgpu-1g`).   |
+| `ACCELERATOR_TYPE`     | The accelerator type (e.g., `nvidia-h100-80gb`).            |
+| `ACCELERATOR_COUNT`    | The number of accelerators to attach.                       |
+
+#### Job-specific parameters ####
 | `JOB`                  | A unique string identifier for a job.                       |
 | `JOB_VERSION`          | The job version, allowing the same job to be run multiple times. |
 | `INPUT_FASTA`          | The input FASTA file for a job.                             |
 | `WAIT`                 | When used with `submit`, blocks until the job completes.    |
-| `MODEL_NAME`           | The Evo 2 model name to use.                                |
 | `INCLUDE_EMBEDDING`    | Whether to include embeddings in the output.                |
 | `EMBEDDING_LAYERS`     | Specific layers to use for embeddings.                      |
-| `MACHINE_TYPE`         | The GCP machine type for the job (e.g., `a3-highgpu-1g`).   |
-| `ACCELERATOR_TYPE`     | The accelerator type (e.g., `nvidia-h100-80gb`).            |
-| `ACCELERATOR_COUNT`    | The number of accelerators to attach.                       |
 | `JOBS_DIR`             | The local directory for storing downloaded job results.     |
 
 ## Implementation Details

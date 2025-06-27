@@ -65,7 +65,7 @@ evo_gcp setup_bucket --bucket_name my-project-bucket
 
 ### 2. Running a Job
 
-To run the model, submit a job with a name and an input FASTA file.
+To run the model, submit a job with a name and an input FASTA file. The primary input for the model is a FASTA file, which must be specified for each job using the `--input_fasta` flag.
 
 ```bash
 # Submit a job and wait for it to complete

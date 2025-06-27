@@ -39,8 +39,8 @@ def upload_directory_to_gcs(local_dir: str, bucket_name: str, gcs_prefix: str = 
             rel_path = path.relative_to(local_path)
             blob_path = f"{gcs_prefix}/{rel_path}".strip("/")
             blob = bucket.blob(blob_path)
+            print(f"Uploading: gs://{bucket_name}/{blob_path}")
             blob.upload_from_filename(str(path))
-            print(f"Uploaded: gs://{bucket_name}/{blob_path}")
     print("Upload complete.")
 
 def main():

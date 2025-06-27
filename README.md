@@ -19,10 +19,13 @@ The tool was tested on macOS 13.3.1 with Python 3.9.6 and Docker 28.2.2.
 
 ### Google Cloud Configuration
 
-Setup Google Cloud:
+Set up your Google Cloud environment:
 
 ```bash
+# Initialize gcloud and log in
 gcloud init
+
+# Authorize application-level credentials (used by scripts/libraries)
 gcloud auth application-default login
 ```
 

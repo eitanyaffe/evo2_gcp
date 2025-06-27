@@ -51,7 +51,6 @@ upload_model:
 		--bucket $(BUCKET_NAME) \
 		--gcs_path "models/$(MODEL_NAME)" \
 		--tmp_dir $(MODEL_DIR)
-	rm -rf $(MODEL_DIR)
 
 # folders uploaded to bucket
 SCRIPTS_DIR?=scripts

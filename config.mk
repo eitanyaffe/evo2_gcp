@@ -1,6 +1,17 @@
 #####################################################################################
-# docker image
+# Google parameters
 #####################################################################################
+
+# GCP project
+GCP_PROJECT?=relman-yaffe
+
+# bucket and job location
+LOCATION?=us-central1
+
+#####################################################################################
+# docker
+#####################################################################################
+
 
 # local docker image name
 IMAGE_NAME?=evo2
@@ -11,9 +22,6 @@ CUDA_VERSION?=12.4.1
 # docker image Ubuntu version
 UBUNTU_VERSION?=22.04
 
-# GCP project
-GCP_PROJECT?=relman-yaffe
-
 # docker image name
 DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSION)
 
@@ -23,9 +31,6 @@ DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSIO
 
 # bucket name
 BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2
-
-# bucket and job location
-LOCATION?=us-central1
 
 #####################################################################################
 # job parameters

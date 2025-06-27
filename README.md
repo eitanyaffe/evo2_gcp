@@ -83,20 +83,20 @@ evo_gcp list_jobs
 
 View the remote files for a specific job:
 ```bash
-evo_gcp show --job my-first-job
+evo_gcp show --job my-first-run
 ```
 
 ### 4. Downloading Results
 
 Once a job has succeeded, download its output files.
 ```bash
-evo_gcp download --job my-first-job
+evo_gcp download --job my-first-run
 ```
 By default, results are downloaded to `jobs/<JOB_NAME>/output`. You can specify a different parent directory with the `--jobs_dir` argument:
 ```bash
-evo_gcp download --job my-first-job --jobs_dir /path/to/your/jobs
+evo_gcp download --job my-first-run --jobs_dir /path/to/your/jobs
 ```
-This would save results to `/path/to/your/jobs/my-first-job/output`.
+This would save results to `/path/to/your/jobs/my-first-run/output`.
 
 ## Parameters
 

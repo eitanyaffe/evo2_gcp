@@ -35,4 +35,6 @@ if [ "$INCLUDE_EMBEDDING" = "true" ]; then
     fi
 fi
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 python3 $SCRIPTS_DIR/run_evo.py $SCRIPT_ARGS 2>&1 | tee $OUTPUT_DIR/run_evo.log

@@ -1,103 +1,100 @@
 # Evo2 on Google Cloud Platform
 
-This repo runs the Evo2 model on the Google Cloud. It simplifies the process, by uploading all relevant files to a Google bucket, running Evo 2 in Docker container on a cloud machine with one or more GPUs, and downloading the results.
-
-## Overview
-
-The system uses a `makefile` to orchestrate the different steps involved:
-
-1.  **Docker Image Management**: Building a local Docker image with the necessary environment and pushing it to Google Container Registry (GCR).
-2.  **GCS Bucket Preparation**: Creating a dedicated GCS bucket and uploading the pre-trained model and runtime scripts.
-3.  **Job Preparation**:
-    *   Uploading an input FASTA file to a job-specific directory in the GCS bucket.
-    *   Generating a JSON configuration file (`job.json`) that defines the batch job parameters, including the Docker image to use, environment variables, machine type, GPU requirements, and data paths.
-4.  **Job Submission**: Submitting the configured job to Google Cloud Batch.
-5.  **Monitoring**: Providing commands to list and monitor jobs.
-6. **Downloading**: Downloading the Evo 2 results.  
+This repository simplifies running the Evo2 model on Google Cloud. It provides a command-line wrapper, `evo_gcp.py`, to build a Docker container, manage cloud storage, submit jobs to Google Cloud Batch, and download the results.
 
 ## Prerequisites
 
-*   Google Cloud SDK (`gcloud`, `gsutil`) installed and configured.
-*   Docker installed and running.
-*   Access to a Google Cloud Project with Batch API, Compute Engine API, and Cloud Storage API enabled.
+1.  **Google Cloud SDK**: `gcloud` and `gsutil` must be installed and authenticated.
+2.  **Docker**: The Docker daemon must be installed and running.
+3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
+4.  **GCP Project**: You need a Google Cloud Project with the Batch, Compute Engine, and Cloud Storage APIs enabled.
 
-## Makefile Structure and Customization
+## Quickstart: Installation and Setup
 
-The `makefile` is the central control point for this project. You can customize various aspects of the job submission by modifying the variables defined in the file.
+### 1. Set the Environment Variable
 
-### Key Makefile Variables for Customization
+The wrapper script needs to know the location of this repository. Set the `EVO_GCP_DIR` environment variable to the absolute path of the project's root directory.
 
-Here are some of the most important variables you might want to change:
+Add the following line to your shell's configuration file (e.g., `~/.zshrc`, `~/.bashrc`):
+```bash
+export EVO_GCP_DIR=/path/to/your/evo2_gcp
+```
+Remember to reload your shell (`source ~/.zshrc`) or open a new terminal for the change to take effect.
 
-#### 1. Input Data
+### 2. Install the Wrapper (Optional)
 
-*   `JOB`: A unique user-specified job identifier.
-*   `INPUT_FASTA`: Specifies the path to the input FASTA file.
-    *   Default: `examples/test.fasta`
-    *   This file will be uploaded to `gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/input.fasta` before the job starts.
+For convenience, you can install the `evo_gcp.py` script to a system directory, allowing you to run it from anywhere.
+```bash
+# This may require superuser privileges
+make install
+```
+This will install the script as `evo_gcp`. If you choose not to install it, you can run it directly from the repository root as `./evo_gcp.py`.
 
-#### 2. Google Cloud Parameters
+## The `evo_gcp.py` Script
 
-*   `BUCKET_NAME`: The name of the GCS bucket used for storing models, scripts, input data, and outputs.
-    *   Default: `relman-evo2`
-*   `LOCATION`: The GCP region where the bucket will be created and where the batch jobs will run.
-    *   Default: `us-central1`
-*   `MACHINE_TYPE`: The type of GCP Compute Engine machine to use for the batch job.
-    *   Default: `a3-highgpu-1g` (an A3 machine with 1 H100 GPU)
-*   `ACCELERATOR_TYPE`: The type of GPU accelerator to attach to the machine.
-    *   Default: `nvidia-h100-80gb`
-*   `ACCELERATOR_COUNT`: The number of GPUs to attach.
-    *   Default: `1`
+The `evo_gcp.py` script orchestrates the entire workflow for running Evo2 on Google Cloud. It simplifies the process by wrapping a series of `make` commands and providing a clear command-line interface. Here's a breakdown of the main steps it manages:
 
-#### 2. Runtime Parameters and Output Configuration
+1.  **Cloud Storage Setup (`setup_bucket`)**: The first step is to create a Google Cloud Storage (GCS) bucket. This bucket acts as a central repository for the Evo2 model, the project source code, and all job-related data, including inputs and outputs.
 
-*   `MODEL_NAME`: The short name of the model to be used (e.g., `evo2_7b`).
-    *   Default: `evo2_7b`
-*   `OUTPUT_TYPES`: Specifies the types of output to generate. This can be a comma-separated list (though the current example `run_evo.py` might expect a single string or be adapted). Common values could be `logits`, `embeddings`, or both. The `run_evo.py` script will need to be written or modified to handle these types.
-    *   Default: `logit`
+2.  **Docker Image Creation (`docker_image`)**: The script builds a Docker image that contains the complete Evo2 environment and all its dependencies. This image is then pushed to the Google Container Registry, making it available for cloud-based execution.
 
-### Main Makefile Targets
+3.  **Job Submission (`submit`)**: When you submit a job, `evo_gcp.py` handles several actions:
+    *   It uploads your input FASTA file to the GCS bucket.
+    *   It submits a new job to Google Cloud Batch.
+    *   The Batch job pulls the Docker image, runs the Evo2 model on your input data, and saves the results back to the GCS bucket.
 
-*   `make docker_image`: Builds the local Docker image and pushes it to GCR.
-*   `make create_bucket`: Creates the GCS bucket specified by `BUCKET_NAME`.
-*   `make upload_model`: Downloads the specified model and uploads it to `gs://$(BUCKET_NAME)/models/$(MODEL_NAME)`.
-*   `make upload_code`: Uploads the contents of the `scripts` and `configs` directories to GCS.
-*   `make build_json`: Generates the `job.json` configuration file for a job.
-*   `make upload_fasta`: Uploads the `INPUT_FASTA` of the job file to GCS.
-*   `make submit`: Submits the job to GCP Batch.
-*   `make list_jobs`: Lists active batch jobs.
-*   `make download`: Gets results for a job.
+4.  **Downloading Results (`download`)**: After a job completes, you can use the `download` command to retrieve the output files from the GCS bucket to your local machine.
 
-## Running a Job
+To see a full list of commands and their descriptions, run:
+```bash
+evo_gcp
+```
 
-1.  **Configure Makefile**: Update the variables in the `makefile` (especially `BUCKET_NAME`, `DOCKER_IMAGE`, `MODEL_NAME`, `INPUT_FASTA`, `JOB`) to match your GCP project, desired model, and input data.
-2.  **Build Docker Image**:
-    ```bash
-    make docker_image
-    ```
-3.  **Prepare GCS Bucket (One-time or if content changes)**:
-    ```bash
-    make create_bucket  # If the bucket doesn't exist
-    make upload_model
-    make upload_code
-    ```
-4.  **Submit a Job**:
-    ```bash
-    make submit
-    ```
-    This will:
-    *   Upload your FASTA file (`make upload_fasta`).
-    *   Generate the `job.json` (`make build_json`).
-    *   Submit the job to Google Cloud Batch.
+In terms of implementation, `evo_gcp.py` is a user-friendly wrapper around a `makefile`. It reads variables from `config.mk` (such as `JOB`, `BUCKET_NAME`, etc.) and makes them available as command-line arguments (e.g., `--job`, `--bucket_name`). When you run a command like `evo_gcp submit --job test`, the script constructs and executes the corresponding `make` command (`make submit JOB=test`) behind the scenes. This provides a simpler interface without needing to know `make` syntax. For a detailed explanation of the underlying `makefile` implementation, see [makefile.md](./makefile.md).
 
-5.  **Monitor Job**:
-    ```bash
-    make list_jobs
-    ```
-    You can also check the job status and logs in the Google Cloud Console under the Batch section.
+## Running a Job: Step-by-Step
 
-6.  **Download Output**:
-    Once the job is complete, you can download the results using:
-    ```bash
-    make download
-    ```
+### 1. Build the Docker Image (One-Time)
+
+First, build the Docker image and push it to Google Container Registry.
+```bash
+evo_gcp docker_image
+```
+
+### 2. Initial Project Setup (One-Time per Project)
+
+Next, you need to create the GCS bucket and upload the model and code. 
+```bash
+evo_gcp setup_bucket
+```
+
+You can override the default bucket name.
+```bash
+evo_gcp setup_bucket --bucket_name my-project-bucket
+```
+
+### 3. Submit a Job
+
+Now you can submit a job. You must specify a job name and an input FASTA file. Use the `--wait` flag to make the command block until the job is finished.
+```bash
+evo_gcp submit --job my-first-job --input_fasta examples/test.fasta --wait
+```
+
+### 4. Monitor Jobs
+
+You can list all active jobs:
+```bash
+evo_gcp list_jobs
+```
+Or view the remote files for a specific job:
+```bash
+evo_gcp show --job my-first-job
+```
+
+### 5. Download Results
+
+Once the job has succeeded, download the output files.
+```bash
+evo_gcp download --job my-first-job
+```
+The results will be downloaded to `jobs/my-first-job/output`.

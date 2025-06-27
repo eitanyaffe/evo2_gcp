@@ -82,7 +82,7 @@ def main():
         # For individual processing or to match `forward`'s expected input, we tokenize one by one.
         token_ids = evo_model.tokenizer.tokenize(sequence) # Tokenize the sequence into a list of token IDs
         # Convert to 2D tensor [1, sequence_length], set dtype to torch.int, and move to the model's device
-        input_ids = torch.tensor(token_ids, dtype=torch.int).unsqueeze(0)
+        input_ids = torch.tensor(token_ids, dtype=torch.int).unsqueeze(0).to('cuda:0')
 
         logits, embeddings = evo_model.forward(
             input_ids,

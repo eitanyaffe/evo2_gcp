@@ -1,56 +1,20 @@
-#####################################################################################
-# job parameters
-#####################################################################################
-
-# job label (unique string identifier)
-JOB?=evo-test
-
-# job version (allows to submit the same job multiple times)
-JOB_VERSION?=v18
+include config.mk
+include extra.mk
 
 # add version to job tag
 JOB_TAG?=$(JOB)-$(JOB_VERSION)
-
-# input fasta file of job
-INPUT_FASTA?=examples/test.fasta
-
-#####################################################################################
-# GCP paths
-#####################################################################################
-
-# bucket name
-BUCKET_NAME?=relman-evo2
-
-# bucket and job location
-LOCATION?=us-central1
-
-#####################################################################################
-# runtime and output parameters
-#####################################################################################
-
-# Evo 2 model name
-MODEL_NAME?=evo2_7b
-
-INCLUDE_EMBEDDING?=true
-EMBEDDING_LAYERS?=blocks.28.mlp.l3
-
-# machine type
-MACHINE_TYPE?=a3-highgpu-1g
-
-# accelerator type
-ACCELERATOR_TYPE?=nvidia-h100-80gb
-
-# accelerator count
-ACCELERATOR_COUNT?=1
 
 #####################################################################################
 # Combo rules
 #####################################################################################
 
-# run once 
+# every project has a dedicated bucket
+# every job has a dedicated folder in the bucket
+
+# run once per project
 all_once: docker_image create_bucket upload_model upload_code
 
-# run per job
+# submit job
 all: submit
 
 # after job is done
@@ -60,37 +24,11 @@ get: download
 # build and upload docker image to GCR
 #####################################################################################
 
-DOCKER_LOCAL?=evo2
-DOCKER_IMAGE?=gcr.io/relman-yaffe/evo2
-
+# build docker image
 docker_image:
-	docker build -t $(DOCKER_LOCAL) .
-	docker tag $(DOCKER_LOCAL) $(DOCKER_IMAGE)
+#	docker build -t $(IMAGE_NAME) .
+	docker tag $(IMAGE_NAME) $(DOCKER_IMAGE)
 	docker push $(DOCKER_IMAGE)
-
-# open local container for testing and debugging
-env:
-	mkdir -p jobs/$(JOB_TAG)
-	cp $(INPUT_FASTA) jobs/$(JOB_TAG)/input.fasta
-	docker run -it \
-		-v /tmp:/tmp \
-		-v $(PWD):/work \
-		-w /work \
-		-e JOB=$(JOB_TAG) \
-		-e JOB_JSON=$(JOB_JSON) \
-		-e BUCKET_NAME=$(BUCKET_NAME) \
-		-e DOCKER_IMAGE=$(DOCKER_IMAGE) \
-		-e JOB_TAG=$(JOB_TAG) \
-		-e MODEL_NAME=$(MODEL_NAME) \
-		-e INCLUDE_EMBEDDING=$(INCLUDE_EMBEDDING) \
-		-e EMBEDDING_LAYERS="$(EMBEDDING_LAYERS)" \
-		-e MACHINE_TYPE=$(MACHINE_TYPE) \
-		-e ACCELERATOR_TYPE=$(ACCELERATOR_TYPE) \
-		-e ACCELERATOR_COUNT=$(ACCELERATOR_COUNT) \
-		-e RUN_SCRIPT_PATH=$(SCRIPT_PATH) \
-		-e MNT_DIR=/work \
-		$(DOCKER_LOCAL) \
-		bash
 
 #####################################################################################
 # prepare GCR bucket with model, scripts, configs
@@ -98,7 +36,7 @@ env:
 
 # create bucket
 create_bucket:
-	gsutil mb -l $(LOCATION) gs://$(BUCKET_NAME)
+	gsutil ls -b gs://$(BUCKET_NAME) >/dev/null 2>&1 || gsutil mb -l $(LOCATION) gs://$(BUCKET_NAME)
 
 # model
 MODEL_NAME_FULL?=arcinstitute/$(MODEL_NAME)
@@ -112,7 +50,7 @@ upload_model:
 		--gcs_path "models/$(MODEL_NAME)" \
 		--tmp_dir $(MODEL_DIR)
 
-# scripts
+# folders uploaded to bucket
 SCRIPTS_DIR?=scripts
 CONFIGS_DIR?=configs
 
@@ -126,7 +64,7 @@ upload_code:
 #####################################################################################
 
 # job directory
-JOB_DIR?=jobs/$(JOB_TAG)
+JOB_DIR?=$(JOBS_DIR)/$(JOB_TAG)
 
 # checkpoint path
 CHECKPOINT_PATH?=$(MODEL_DIR)/$(MODEL_NAME).pt
@@ -159,7 +97,11 @@ build_json:
 
 # submit job
 submit: upload_code upload_fasta build_json
-	gcloud batch jobs submit $(JOB_TAG) --config=$(JOB_JSON) --location=$(LOCATION)
+	bash submit_job.sh \
+		--job-name $(JOB_TAG) \
+		--location $(LOCATION) \
+		--job-json $(JOB_JSON) \
+		$(if $(WAIT),--wait)
 
 #####################################################################################
 # download results to local computer
@@ -184,71 +126,29 @@ show:
 list_jobs:
 	gcloud batch jobs list --location=$(LOCATION)
 
-#####################################################################################
-# large input testing
-#####################################################################################
-
-INPUT_FASTA_TEST?=examples/large_test.fasta
-READ_COUNT?=10
-READ_LENGTH?=1000000
-
-INPUT_FASTA_TEST_MEDIUM?=examples/medium_test.fasta
-
-# generate large fasta
-generate_fasta:
-	python3 utils/generate_fasta.py \
-		--output_file $(INPUT_FASTA_TEST) \
-		--read_count $(READ_COUNT) \
-		--read_length $(READ_LENGTH)
-
-# run evo on large fasta
-test_long:
-	$(MAKE) submit \
-		INPUT_FASTA=$(INPUT_FASTA_TEST) \
-		JOB=evo-large \
-		INCLUDE_EMBEDDING=false \
-		MACHINE_TYPE=a3-highgpu-4g \
-		ACCELERATOR_COUNT=4 \
-		JOB_VERSION=v8
-
-# run evo on large fasta
-test_medium:
-	$(MAKE) generate_fasta \
-		INPUT_FASTA_TEST=$(INPUT_FASTA_TEST_MEDIUM) \
-		READ_LENGTH=100000
-	$(MAKE) submit \
-		INPUT_FASTA=$(INPUT_FASTA_TEST_MEDIUM) \
-		JOB=evo-medium \
-		INCLUDE_EMBEDDING=false \
-		MACHINE_TYPE=a3-highgpu-2g \
-		ACCELERATOR_COUNT=2 \
-		JOB_VERSION=v1
+# Generic rule to print the value of any makefile variable.
+# Used by the Python wrapper to get evaluated default values.
+# Example: make print-JOB_TAG
+print-%:
+	@echo $($*)
 
 #####################################################################################
-# replace codon
+# Installation
 #####################################################################################
 
-INPUT_FASTA_WT?=examples/gyrA_sensitive.fasta
-INPUT_FASTA_RESISTANT?=examples/gyrA_resistant.fasta
-CODON_POSITION?=83
-CODON_NEW?=ATC
+# Installs the evo_gcp script to a system-wide directory.
+# This may require superuser privileges (e.g., 'sudo make install').
+INSTALL_DIR ?= /usr/local/bin
+INSTALL_NAME = evo_gcp
 
-# replace codon
-replace_codon:
-	python3 utils/replace_codon.py \
-		--fasta_file $(INPUT_FASTA_WT) \
-		--aa_position $(CODON_POSITION) \
-		--new_codon $(CODON_NEW) \
-		--output_file $(INPUT_FASTA_RESISTANT)
+.PHONY: install uninstall
 
-# both gyrA sequences in one fasta file
-INPUT_FASTA_COMBINED?=examples/gyrA_combined.fasta
+install:
+	@mkdir -p $(INSTALL_DIR)
+	@install -m 755 evo_gcp.py $(INSTALL_DIR)/$(INSTALL_NAME)
+	@echo "✅ $(INSTALL_NAME) installed to $(INSTALL_DIR)"
+	@echo "\nMake sure '$(INSTALL_DIR)' is in your PATH."
 
-# run evo on combined fasta
-test_combined:
-	$(MAKE) submit \
-		INPUT_FASTA=$(INPUT_FASTA_COMBINED) \
-		JOB=evo-combined \
-		JOB_VERSION=v5
-download_combined:
-	$(MAKE) download JOB=evo-combined JOB_VERSION=v5
+uninstall:
+	@rm -f $(INSTALL_DIR)/$(INSTALL_NAME)
+	@echo "🗑️ Uninstalled $(INSTALL_NAME) from $(INSTALL_DIR)"

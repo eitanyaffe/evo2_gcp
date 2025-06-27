@@ -2,6 +2,12 @@
 
 This repository provides tools to run the Evo2 model on Google Cloud. It features a command-line wrapper, `evo_gcp.py`, that simplifies building a Docker container, managing cloud storage, submitting jobs to Google Cloud Batch, and downloading results.
 
+## System Requirements
+
+- **OS**: Tested on macOS 13.3.1
+- **Docker**: Tested on version 28.2.2
+- **Python 3**: Tested on version 3.9.6
+
 ## Prerequisites
 
 1.  **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install)**: `gcloud` and `gsutil` must be installed. Make sure you are authenticated:
@@ -15,11 +21,21 @@ This repository provides tools to run the Evo2 model on Google Cloud. It feature
 3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
 4.  **GCP Project**: You need a Google Cloud Project with the necessary APIs and permissions enabled. See [docs/google.md](./docs/google.md) for instructions on enabling APIs and setting up user roles.
 
-## System Requirements
+### Google Cloud Configuration
 
-- **OS**: Tested on macOS 13.3.1
-- **Docker**: Tested on version 28.2.2
-- **Python 3**: Tested on version 3.9.6
+Setup Google Cloud:
+
+```bash
+gcloud init
+gcloud auth application-default login
+```
+
+### Python Dependencies
+
+Install the required Python packages:
+```bash
+pip install --upgrade huggingface-hub google google-api-python-client google-cloud-storage
+```
 
 ## Installation
 

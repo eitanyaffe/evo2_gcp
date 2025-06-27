@@ -18,8 +18,6 @@ This document outlines how to grant a new user permissions to use **Google Cloud
    | Create/manage buckets         | `roles/storage.admin`           |
    | Submit/manage Batch jobs      | `roles/batch.admin`             |
    | Use service accounts for jobs | `roles/iam.serviceAccountUser`  |
-   | *(Optional)* View logs        | `roles/logging.viewer`          |
-   | *(Optional)* View compute info| `roles/compute.viewer`          |
 
 4. **Grant service account access**:
    - Go to **IAM > Service Accounts**.

@@ -20,8 +20,6 @@ git clone git@github.com:eitanyaffe/evo2_gcp.git
 cd evo2_gcp
 ```
 
-## Configuration
-
 ### Environment Variable
 
 The wrapper script needs to know the location of this repository. Set the `EVO_GCP_DIR` environment variable to the absolute path of the project's root directory.

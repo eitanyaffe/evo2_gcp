@@ -8,9 +8,18 @@ This repository provides tools to run the Evo2 model on Google Cloud. It feature
     ```bash
     gcloud auth login
     ```
-2.  **[Docker](https://docs.docker.com/engine/install/)**: The Docker daemon must be installed and running.
+2.  **[Docker](https://docs.docker.com/engine/install/)**: The Docker daemon must be installed and running. On macOS, you can start Docker by running:
+    ```bash
+    open -a Docker
+    ```
 3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
 4.  **GCP Project**: You need a Google Cloud Project with the necessary APIs and permissions enabled. See [docs/google.md](./docs/google.md) for instructions on enabling APIs and setting up user roles.
+
+## System Requirements
+
+- **OS**: Tested on macOS 13.3.1
+- **Docker**: Tested on version 28.2.2
+- **Python 3**: Tested on version 3.9.6
 
 ## Installation
 
@@ -24,7 +33,7 @@ cd evo2_gcp
 
 The wrapper script needs to know the location of this repository. Set the `EVO_GCP_DIR` environment variable to the absolute path of the project's root directory.
 
-Add this line to your shell's configuration file (e.g., `~/.zshrc`, `~/.bashrc`):
+Add this line to your shell's configuration file (e.g., `~/.zshrc`, `~/.bash_profile`):
 ```bash
 export EVO_GCP_DIR=/path/to/your/evo2_gcp
 ```

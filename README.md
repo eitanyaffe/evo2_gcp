@@ -118,6 +118,24 @@ evo_gcp download --job my-first-run --jobs_dir /path/to/your/jobs
 ```
 This would save results to `/path/to/your/jobs/my-first-run/output`.
 
+
+### 5. Understanding Output Files
+
+When a job completes successfully, the output directory contains several files:
+
+- **`run_evo.log`**: A detailed log file containing the execution trace and processing progress for each sequence.
+
+- **`input_<sequence_id>_logits.npy`**: For each sequence in your input FASTA file, a NumPy file containing the model's logits (raw output scores). The filename includes the sequence identifier from the FASTA header.
+
+- **`input_<sequence_id>_embeddings_<layer_name>.npy`**: If you requested embeddings using the `--include_embedding` flag, additional NumPy files containing the embeddings from the specified layers. The filename includes both the sequence identifier and the layer name.
+
+For example, if your FASTA contains a sequence with header `>Ecoli_gyrA_WT` and you requested embeddings from the `blocks.28.mlp.l3` layer, you would get:
+- `input_Ecoli_gyrA_WT_logits.npy` - the logits for this sequence
+- `input_Ecoli_gyrA_WT_embeddings_blocks_28_mlp_l3.npy` - the embeddings from the specified layer
+
+The logits are always included in the output, while embeddings are only generated when explicitly requested.
+
+
 ## Parameters
 
 You can customize the behavior of `evo_gcp` by modifying its parameters. There are two ways to set them:

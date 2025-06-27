@@ -3,40 +3,25 @@ import argparse
 from huggingface_hub import snapshot_download
 from google.cloud import storage
 from pathlib import Path
-import atexit
 import signal
 import subprocess
 import sys
 
-def _get_child_pids(pid):
-    """Returns a list of child PIDs for a given PID."""
+def kill_child_processes(signum, frame):
+    """Signal handler to kill all child processes."""
+    print("\nInterrupt received, killing child processes...", file=sys.stderr)
     try:
-        children = subprocess.check_output(["pgrep", "-P", str(pid)])
-        return [int(p) for p in children.decode("utf-8").split()]
-    except subprocess.CalledProcessError:
-        return []
-
-def _kill_process_tree(pid):
-    """Recursively kills a process and all its descendants."""
-    children = _get_child_pids(pid)
-    for child_pid in children:
-        _kill_process_tree(child_pid)
-    
-    try:
-        # Use SIGKILL for forceful termination
-        os.kill(pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass # Process already finished
-
-def _cleanup():
-    """Cleanup function to kill all child processes of the current process."""
-    print("\nCleaning up child processes...")
-    parent_pid = os.getpid()
-    children = _get_child_pids(parent_pid)
-    for child_pid in children:
-        _kill_process_tree(child_pid)
-
-atexit.register(_cleanup)
+        parent_pid = os.getpid()
+        child_pids = subprocess.check_output(["pgrep", "-P", str(parent_pid)])
+        for pid_str in child_pids.split():
+            pid = int(pid_str)
+            # Kill the entire process group of the child
+            os.killpg(os.getpgid(pid), signal.SIGKILL)
+    except (subprocess.CalledProcessError, ProcessLookupError, PermissionError):
+        # Errors can happen if children exit before we kill them
+        pass
+    print("Cleanup complete. Exiting.", file=sys.stderr)
+    sys.exit(130)
 
 def download_model(model_name: str, local_dir: str):
     print(f"Downloading model '{model_name}' to '{local_dir}'...")
@@ -66,14 +51,11 @@ def main():
     parser.add_argument("--tmp_dir", default="hf_model_tmp", help="Local temp directory to store the model")
     args = parser.parse_args()
 
-    try:
-        download_model(args.model_name, args.tmp_dir)
-        upload_directory_to_gcs(args.tmp_dir, args.bucket, args.gcs_path)
-    except KeyboardInterrupt:
-        print("\nProcess interrupted by user. Exiting.", file=sys.stderr)
-        # The atexit handler will be called automatically.
-        # Exit with a status code indicating interruption.
-        sys.exit(130)
+    # Register the signal handler for Ctrl+C
+    signal.signal(signal.SIGINT, kill_child_processes)
+
+    download_model(args.model_name, args.tmp_dir)
+    upload_directory_to_gcs(args.tmp_dir, args.bucket, args.gcs_path)
 
 if __name__ == "__main__":
     main()

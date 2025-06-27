@@ -26,7 +26,7 @@ get: download
 
 # build docker image
 docker_image:
-#	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME) .
 	docker tag $(IMAGE_NAME) $(DOCKER_IMAGE)
 	docker push $(DOCKER_IMAGE)
 

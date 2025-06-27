@@ -22,7 +22,7 @@ DOCKER_TAG?=latest
 #####################################################################################
 
 # bucket name
-BUCKET_NAME?=$(USER)-evo2
+BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2
 
 # bucket and job location
 LOCATION?=us-central1

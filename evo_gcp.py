@@ -43,27 +43,22 @@ def parse_config_vars(config_path):
         sys.exit(1)
     return vars
 
-def run_command(command, env=None):
-    """Runs a command and exits if it fails, ensuring subprocesses are terminated on interrupt."""
-    print(f"Running command: {' '.join(command)}")
+def run_command(command):
+    cmd_str = ' '.join(command)
+    print(f"Running command: {cmd_str}")
     try:
-        # Using Popen to have better control over the subprocess
-        # os.setsid makes the subprocess a group leader, so we can kill the whole process tree
-        # This is for Unix-like systems (macOS, Linux)
-        process = subprocess.Popen(command, env=env, preexec_fn=os.setsid)
-        process.wait()
+        exit_code = os.system(cmd_str)
+        # os.system returns a 16-bit encoded value: high byte is signal, low byte is exit code
+        if os.WIFSIGNALED(exit_code):
+            sig = os.WTERMSIG(exit_code)
+            print(f"Command terminated by signal {sig}", file=sys.stderr)
+            sys.exit(128 + sig)
+        elif os.WEXITSTATUS(exit_code) != 0:
+            print(f"Command exited with code {os.WEXITSTATUS(exit_code)}", file=sys.stderr)
+            sys.exit(1)
     except KeyboardInterrupt:
-        print(f"\nCaught interrupt. Terminating process {process.pid} and its children.", file=sys.stderr)
-        # Kill the entire process group by sending a signal to the group leader
-        os.killpg(os.getpgid(process.pid), signal.SIGINT)
-        # Optionally, wait for the process to terminate
-        process.wait()
-        print("Process terminated.", file=sys.stderr)
-        sys.exit(130) # Exit with a status code indicating interruption
-
-    if process.returncode != 0:
-        print(f"Error executing command. Exit code: {process.returncode}", file=sys.stderr)
-        sys.exit(1)
+        print("\nInterrupted by user.", file=sys.stderr)
+        sys.exit(130)
 
 def get_make_args(args, config_vars):
     """Constructs a list of KEY=VALUE strings for make."""

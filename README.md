@@ -1,13 +1,13 @@
 # Evo2 on Google Cloud Platform
 
-This repository simplifies running the Evo2 model on Google Cloud. It provides a command-line wrapper, `evo_gcp.py`, to build a Docker container, manage cloud storage, submit jobs to Google Cloud Batch, and download the results.
+This repository simplifies running the Evo2 model on Google Cloud, a suite of public cloud computing services offered by Google. It provides a command-line wrapper, `evo_gcp.py`, to build a Docker container, manage cloud storage, submit jobs to Google Cloud Batch, and download the results.
 
 ## Prerequisites
 
-1.  **Google Cloud SDK**: `gcloud` and `gsutil` must be installed and authenticated.
-2.  **Docker**: The Docker daemon must be installed and running.
+1.  **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install)**: `gcloud` and `gsutil` must be installed and authenticated.
+2.  **[Docker](https://docs.docker.com/engine/install/)**: The Docker daemon must be installed and running.
 3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
-4.  **GCP Project**: You need a Google Cloud Project with the Batch, Compute Engine, and Cloud Storage APIs enabled.
+4.  **GCP Project**: You need a Google Cloud Project with the Batch, Compute Engine, and Cloud Storage APIs enabled. See [google.md](./google.md) for setup details.
 
 ## Quickstart: Installation and Setup
 
@@ -82,6 +82,8 @@ evo_gcp submit --job my-first-job --input_fasta examples/test.fasta --wait
 
 ### 4. Monitor Jobs
 
+Monitoring is only necessary for jobs submitted without the `--wait` flag, which run asynchronously.
+
 You can list all active jobs:
 ```bash
 evo_gcp list_jobs
@@ -97,4 +99,8 @@ Once the job has succeeded, download the output files.
 ```bash
 evo_gcp download --job my-first-job
 ```
-The results will be downloaded to `jobs/my-first-job/output`.
+By default, the results will be downloaded to `jobs/my-first-job/output` in your current directory. You can specify a different parent directory with the `--jobs_dir` argument:
+```bash
+evo_gcp download --job my-first-job --jobs_dir /path/to/your/jobs
+```
+With this command, the results would be saved to `/path/to/your/jobs/my-first-job/output`.

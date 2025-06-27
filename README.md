@@ -128,11 +128,11 @@ Now, any `evo_gcp submit` command will use `evo2_40b` unless overridden by the `
 
 ### Available Parameters
 
-Here is a list of all available parameters and their descriptions.
+Here is a list of all available parameters and their descriptions (see `config.mk`).
 
 #### Google and docker parameters ####
 
-| Variable (`config.mk`) | Description                                                 |
+| Variable               | Description                                                 |
 | ---------------------- | ----------------------------------------------------------- |
 | `GCP_PROJECT`          | GCP project ID.                                             |
 | `LOCATION`             | GCP location for the bucket and batch jobs.                 |
@@ -144,7 +144,7 @@ Here is a list of all available parameters and their descriptions.
 
 #### General evo parameters ####
 
-| Variable (`config.mk`) | Description                                                 |
+| Variable               | Description                                                 |
 | ---------------------- | ----------------------------------------------------------- |
 | `MODEL_NAME`           | The Evo 2 model name to use.                                |
 | `MACHINE_TYPE`         | The GCP machine type for the job (e.g., `a3-highgpu-1g`).   |
@@ -153,7 +153,7 @@ Here is a list of all available parameters and their descriptions.
 
 #### Job-specific parameters ####
 
-| Variable (`config.mk`) | Description                                                 |
+| Variable               | Description                                                 |
 | ---------------------- | ----------------------------------------------------------- |
 | `JOB`                  | A unique string identifier for a job.                       |
 | `JOB_VERSION`          | The job version, allowing the same job to be run multiple times. |

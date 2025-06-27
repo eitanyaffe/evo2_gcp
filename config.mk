@@ -8,11 +8,14 @@ IMAGE_NAME?=evo2
 # docker image CUDA version
 CUDA_VERSION?=12.4.1
 
+# docker image Ubuntu version
+UBUNTU_VERSION?=22.04
+
 # GCP project
 GCP_PROJECT?=relman-yaffe
 
 # docker image name
-DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(CUDA_VERSION)
+DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSION)
 
 # docker image tag
 DOCKER_TAG?=latest

@@ -26,7 +26,9 @@ get: download
 
 # build docker image
 docker_image:
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME) \
+		--build-arg CUDA_VERSION=$(CUDA_VERSION) \
+		--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION) .
 	docker tag $(IMAGE_NAME) $(DOCKER_IMAGE)
 	docker push $(DOCKER_IMAGE)
 

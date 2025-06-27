@@ -133,6 +133,7 @@ Here is a list of all available parameters and their descriptions.
 | Variable (`config.mk`) | Description                                                 |
 | ---------------------- | ----------------------------------------------------------- |
 | `IMAGE_NAME`           | Local Docker image name.                                    |
+| `UBUNTU_VERSION`       | Docker image Ubuntu version.                                |
 | `CUDA_VERSION`         | Docker image CUDA version.                                  |
 | `GCP_PROJECT`          | GCP project ID.                                             |
 | `DOCKER_IMAGE`         | Full Docker image name for Google Container Registry.       |

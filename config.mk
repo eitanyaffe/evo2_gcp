@@ -17,9 +17,6 @@ GCP_PROJECT?=relman-yaffe
 # docker image name
 DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSION)
 
-# docker image tag
-DOCKER_TAG?=latest
-
 #####################################################################################
 # GCP paths
 #####################################################################################

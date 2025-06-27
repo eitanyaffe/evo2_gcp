@@ -12,6 +12,14 @@ This repository provides tools to run the Evo2 model on Google Cloud. It feature
 3.  **Python 3**: Required for the `evo_gcp.py` wrapper.
 4.  **GCP Project**: You need a Google Cloud Project with the necessary APIs and permissions enabled. See [docs/google.md](./docs/google.md) for instructions on enabling APIs and setting up user roles.
 
+## Installation
+
+First, clone the repository to your local machine:
+```bash
+git clone git@github.com:eitanyaffe/evo2_gcp.git
+cd evo2_gcp
+```
+
 ## Configuration
 
 ### Environment Variable
@@ -28,7 +36,7 @@ Remember to reload your shell (`source ~/.zshrc`) or open a new terminal for the
 
 You can configure project-wide settings, such as the Google Cloud region and bucket name, by editing the `config.mk` file. These values can also be overridden at runtime using command-line arguments (e.g., `--region <REGION>`).
 
-## Installation (Optional)
+### Install Wrapper (Optional)
 
 For convenience, you can install the `evo_gcp.py` script to a system directory, allowing you to run it from anywhere.
 ```bash

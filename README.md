@@ -49,7 +49,7 @@ The typical workflow involves a one-time setup followed by running jobs.
 
 ### 1. One-Time Setup
 
-First, build the Docker image and set up the Google Cloud Storage bucket. This prepares your cloud environment, uploads the Evo2 model (this may take a few minutes), and syncs the source code.
+First, build the Docker image and set up the Google Cloud Storage bucket. This prepares your cloud environment, uploads the Evo2 model, and syncs the source code.
 
 ```bash
 # Build the Docker image and push it to Google Container Registry
@@ -57,10 +57,6 @@ evo_gcp docker_image
 
 # Create the GCS bucket and upload the model and code
 evo_gcp setup_bucket
-```
-You can override the default bucket name during setup:
-```bash
-evo_gcp setup_bucket --bucket_name my-project-bucket
 ```
 
 ### 2. Running a Job

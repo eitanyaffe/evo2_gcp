@@ -25,7 +25,8 @@ UBUNTU_VERSION?=22.04
 # docker image name
 DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSION)
 
-# if you have access to an existing image such as the one below you can set it here
+# if you have access to an existing image such as the one below you can use it
+# by commenting out the line above and uncommenting the line below
 #DOCKER_IMAGE?=gcr.io/relman-yaffe/eitany/evo2:22.04_12.4.1
 
 #####################################################################################

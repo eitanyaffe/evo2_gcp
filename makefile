@@ -112,6 +112,7 @@ submit: upload_code upload_fasta build_json
 # download results
 download:
 	gsutil -m cp -r gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/output $(JOB_DIR)
+	echo "Downloaded results to $(JOB_DIR)"
 
 save_vocab:
 	python3 scripts/save_vocab.py

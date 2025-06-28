@@ -34,7 +34,7 @@ DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSIO
 #####################################################################################
 
 # bucket name
-BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2-v2
+BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2
 
 #####################################################################################
 # job parameters

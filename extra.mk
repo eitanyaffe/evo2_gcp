@@ -72,6 +72,7 @@ download_compare:
 # open local container for testing and debugging
 #####################################################################################
 
+ENV_IMAGE?=$(IMAGE_NAME)
 env:
 	mkdir -p jobs/$(JOB_TAG)
 	cp $(INPUT_FASTA) jobs/$(JOB_TAG)/input.fasta
@@ -92,5 +93,5 @@ env:
 		-e ACCELERATOR_COUNT=$(ACCELERATOR_COUNT) \
 		-e RUN_SCRIPT_PATH=$(SCRIPT_PATH) \
 		-e MNT_DIR=/work \
-		$(IMAGE_NAME) \
+		$(ENV_IMAGE) \
 		bash

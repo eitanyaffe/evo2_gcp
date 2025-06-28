@@ -1,9 +1,9 @@
-ninja
-torch>=2.5.1,<=2.6.1
+ninja==1.11.1.4
+torch==2.6.0
 transformer_engine[pytorch]==1.13.0
-numpy
+numpy==2.2.6
 einops==0.8.0
-packaging
-rich
-tqdm
-PyYAML
+packaging==25.0
+rich==14.0.0
+tqdm==4.67.1
+PyYAML==6.0.2

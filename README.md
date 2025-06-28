@@ -52,7 +52,18 @@ Add this line to your shell's configuration file (e.g., `~/.zshrc`, `~/.bash_pro
 ```bash
 export EVO_GCP_DIR=/path/to/your/evo2_gcp
 ```
-Remember to reload your shell (`source ~/.zshrc`) or open a new terminal for the change to take effect.
+Remember to reload your shell (e.g., `source ~/.zshrc`) or open a new terminal for the change to take effect.
+
+> [!TIP]
+> To determine which shell you are using, run `echo $SHELL` in your terminal. Common shells include:
+> - `/bin/zsh` (Zsh - default on macOS Catalina and later)
+> - `/bin/bash` (Bash - default on many Linux distributions)
+> - `/bin/sh` (Bourne shell)
+> 
+> Once you know your shell, you can add the environment variable to the appropriate configuration file:
+> - For Zsh: `~/.zshrc`
+> - For Bash: `~/.bash_profile` or `~/.bashrc`
+> - For other shells: check their documentation for the correct configuration file
 
 ### Project Settings (`config.mk`)
 

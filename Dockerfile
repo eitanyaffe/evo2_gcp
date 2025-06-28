@@ -22,8 +22,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir setuptools wheel
 RUN pip install --no-cache-dir `cat requirements.txt | grep ^torch`
 RUN pip install --no-cache-dir `cat requirements.txt | grep ^numpy`
-RUN pip install --no-cache-dir ninja
+RUN pip install --no-cache-dir ninja==1.11.1.4
 RUN pip install --no-cache-dir -r requirements.txt
 
 # evo2
-RUN pip install --no-cache-dir evo2
+RUN pip install --no-cache-dir evo2==0.2.0

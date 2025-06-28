@@ -24,13 +24,14 @@ UBUNTU_VERSION?=22.04
 
 # docker image name
 DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/$(USER)/evo2:$(UBUNTU_VERSION)_$(CUDA_VERSION)
+#DOCKER_IMAGE?=gcr.io/$(GCP_PROJECT)/evo2:12.4.1
 
 #####################################################################################
 # GCP paths
 #####################################################################################
 
 # bucket name
-BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2
+BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2-v2
 
 #####################################################################################
 # job parameters

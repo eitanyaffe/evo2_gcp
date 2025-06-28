@@ -91,7 +91,7 @@ To build the docker image run:
 # Build the Docker image and push it to Google Container Registry
 evo_gcp docker_image
 ```
-> [TIP!]
+> [!TIP]
 > Building the image is time consuming. If you have access to an existing one you can skip this step by setting `DOCKER_IMAGE` in the `config.mk` file.
 
 To prepare the bucket run:

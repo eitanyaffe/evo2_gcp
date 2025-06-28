@@ -90,12 +90,12 @@ def main():
     config_vars = parse_config_vars('config.mk')
 
     examples = """
-Examples:
-  # Build the docker image, overriding the local tag name
-  evo_gcp docker_image --image_name my-custom-image
+Usage example:
+  # Build the docker image
+  evo_gcp docker_image
 
   # Set up the project bucket for the first time
-  evo_gcp setup_bucket --bucket_name my-evo-project-bucket
+  evo_gcp setup_bucket
 
   # Submit a job with a specific FASTA file and wait for it to complete
   evo_gcp submit --job my-first-run --input_fasta examples/gyrA_sensitive.fasta --wait

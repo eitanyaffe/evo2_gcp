@@ -1,0 +1,14 @@
+{
+	"files.associations": {
+		"Snakefile": "snakemake",
+		"*.snakemake": "snakemake",
+		"*.smk": "snakemake"
+	},
+	"python.analysis.exclude": [
+		"Snakefile",
+		"**/*.snakemake",
+		"**/*.smk"
+	],
+	"python.linting.pylintEnabled": false,
+	"python.linting.enabled": false
+}

@@ -277,6 +277,7 @@ This design provides a simple, accessible interface without requiring knowledge 
 -   `config.mk`: Contains default configuration variables (e.g., `PROJECT_ID`, `BUCKET_NAME`).
 -   `jobs/`: The default local directory for storing downloaded job results.
 -   `examples/`: Contains sample FASTA files for testing.
+-   `workflows/`: Contains specialized analysis pipelines that build on the core Evo2 infrastructure. See [`workflows/README.md`](workflows/README.md) for details.
 -   `docs/`: Contains additional documentation.
 
 ## Version History

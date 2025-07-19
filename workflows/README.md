@@ -27,6 +27,8 @@ cd workflows/strands
 ./runner.sh 83  # Analyze amino acid position 83
 ```
 
+**Prerequisites**: This workflow requires that the Docker image and GCS bucket have already been set up. See the main README for setup instructions.
+
 ## Customizing or Creating New Workflows
 
 To create your own workflow, copy an existing workflow directory (or parts of it) to your own working location. Edit the scripts and input files as needed for your analysis. You should run workflows from your own directories rather than modifying the originals.

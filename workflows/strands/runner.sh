@@ -16,7 +16,7 @@ python3 scripts/generate_codon_variants.py \
 
 # submit job
 evo_gcp submit --job rc-job \
-  --output_type logits_and_embedding \
+  --output_type logits \
   --input_fasta `pwd`/output/query_$POS.fasta \
 	--job_version $POS \
   --wait

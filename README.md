@@ -140,11 +140,7 @@ This would save results to `/path/to/your/jobs/my-first-run/output`.
 
 When a job completes successfully, the output directory contains several files:
 
-- **`run_evo.log`**: A detailed log file containing the execution trace and processing progress for each sequence.
-
 - **`<input_basename>_summary_table.txt`**: A summary table containing metadata for all processed sequences with columns: `seq_id`, `start`, `end`, `total_log_likelihood`. The start and end coordinates show the genomic regions that were analyzed (either from the query table or full sequence), and the total log-likelihood provides an overall score for each sequence.
-
-- **`<input_basename>_processed_ids.txt`**: A simple text file listing the sequence IDs that were processed, one per line.
 
 - **`<input_basename>_<sequence_id>_logits.npy`**: For each sequence in your input FASTA file, a NumPy file containing the model's logits (raw output scores). The filename includes the sequence identifier from the FASTA header. If a query table is provided, logits are restricted to the specified coordinate ranges.
 

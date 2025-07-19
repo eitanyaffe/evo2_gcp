@@ -4,7 +4,9 @@ This directory contains specialized analysis workflows that build on top of the 
 
 ## Overview
 
-Each workflow is designed to address a particular research question or analysis type using the Evo2 model. Workflows are organized into subdirectories, each containing:
+Each workflow is designed to address a particular research question or analysis type using the Evo2 model. Workflows are implemented in bash for simplicity and portability, making them easy to adapt to other workflow management systems (e.g., Snakemake, Nextflow, WDL).
+
+Workflows are organized into subdirectories, each containing:
 
 - Complete analysis pipeline scripts
 - Input data files and templates

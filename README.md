@@ -158,7 +158,7 @@ The output files generated depend on your `OUTPUT_TYPE` setting: `logits` (logit
 
 ## Query Table Feature
 
-The system supports an optional **query table** that allows you to specify which genomic regions to analyze for each sequence. This is useful when you want to focus the model's analysis on specific coordinate ranges rather than processing entire sequences.
+The system supports an optional **query table** that allows you to specify which genomic regions to analyze for each sequence. This reduces file output sizes by restricting logits and embeddings to specified coordinate ranges, while total log-likelihood is still calculated for the entire sequence.
 
 ### Query Table Format
 
@@ -188,15 +188,6 @@ QUERY_TABLE?=examples/my_query.tsv
 ```bash
 evo_gcp submit --job my-job --input_fasta examples/test.fasta --query_table examples/test_query.tsv
 ```
-
-### Query Table Behavior
-
-When a query table is provided:
-- Only sequences listed in the query table are processed
-- Logits and embeddings are restricted to the specified coordinate ranges  
-- The system validates that all FASTA sequence IDs exist in the query table
-- Total log-likelihood is still calculated for the entire sequence, but outputs (logits/embeddings) only cover the query ranges
-- The summary table shows the coordinate ranges that were actually processed
 
 ## Parameters
 

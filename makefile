@@ -26,7 +26,7 @@ get: download
 
 # build docker image
 docker_image:
-	docker build -t $(IMAGE_NAME) \
+	docker build --platform linux/amd64 -t $(IMAGE_NAME) \
 		--build-arg CUDA_VERSION=$(CUDA_VERSION) \
 		--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION) .
 	docker tag $(IMAGE_NAME) $(DOCKER_IMAGE)
@@ -46,7 +46,7 @@ MODEL_DIR?=/tmp/$(MODEL_NAME)
 
 # upload model to bucket
 upload_model:
-	python model_to_bucket.py \
+	python3 model_to_bucket.py \
 		--model_name $(MODEL_NAME_FULL) \
 		--bucket $(BUCKET_NAME) \
 		--gcs_path "models/$(MODEL_NAME)" \
@@ -81,6 +81,11 @@ JOB_JSON?=$(JOB_DIR)/job.json
 upload_fasta:
 	gsutil -m cp $(INPUT_FASTA) gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/input.fasta
 
+upload_query_table:
+ifneq ($(QUERY_TABLE),none)
+	gsutil -m cp $(QUERY_TABLE) gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/query_table.csv
+endif
+	
 # build json file
 build_json:
 	mkdir -p $(JOB_DIR)
@@ -90,7 +95,7 @@ build_json:
 		--image_uri $(DOCKER_IMAGE) \
 		--job_env $(JOB_TAG) \
 		--model_name_env $(MODEL_NAME) \
-		$(if $(filter true,$(INCLUDE_EMBEDDING)),--include_embedding_env,) \
+		--output_type_env $(OUTPUT_TYPE) \
 		$(if $(EMBEDDING_LAYERS),--embedding_layers_env "$(EMBEDDING_LAYERS)",) \
 		--machine_type $(MACHINE_TYPE) \
 		--accelerator_type $(ACCELERATOR_TYPE) \
@@ -98,7 +103,7 @@ build_json:
 		--run_script_path $(SCRIPT_PATH)
 
 # submit job
-submit: upload_code upload_fasta build_json
+submit: upload_code upload_fasta upload_query_table build_json
 	bash submit_job.sh \
 		--job-name $(JOB_TAG) \
 		--location $(LOCATION) \
@@ -139,19 +144,19 @@ print-%:
 # Installation
 #####################################################################################
 
-# Installs the evo_gcp script to a system-wide directory.
-# This may require superuser privileges (e.g., 'sudo make install').
-INSTALL_DIR ?= /usr/local/bin
+# Default install location (can override with 'make install PREFIX=...')
+PREFIX ?= ~/.local
+BINDIR = $(PREFIX)/bin
 INSTALL_NAME = evo_gcp
 
 .PHONY: install uninstall
 
 install:
-	@mkdir -p $(INSTALL_DIR)
-	@install -m 755 evo_gcp.py $(INSTALL_DIR)/$(INSTALL_NAME)
-	@echo "✅ $(INSTALL_NAME) installed to $(INSTALL_DIR)"
-	@echo "\nMake sure '$(INSTALL_DIR)' is in your PATH."
+	@mkdir -p $(BINDIR)
+	@install -m 755 evo_gcp.py $(BINDIR)/$(INSTALL_NAME)
+	@echo "✅ $(INSTALL_NAME) installed to $(BINDIR)"
+	@echo "\nMake sure '$(BINDIR)' is in your PATH."
 
 uninstall:
-	@rm -f $(INSTALL_DIR)/$(INSTALL_NAME)
-	@echo "🗑️ Uninstalled $(INSTALL_NAME) from $(INSTALL_DIR)"
+	@rm -f $(BINDIR)/$(INSTALL_NAME)
+	@echo "🗑️ Uninstalled $(INSTALL_NAME) from $(BINDIR)"

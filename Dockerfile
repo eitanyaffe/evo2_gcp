@@ -1,6 +1,6 @@
 ARG CUDA_VERSION=12.4.1
 ARG UBUNTU_VERSION=22.04
-FROM nvcr.io/nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu${UBUNTU_VERSION}
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu${UBUNTU_VERSION}
 
 # Install Python 3.11 and pip
 RUN apt-get update && apt-get install -y \

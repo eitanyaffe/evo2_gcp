@@ -142,16 +142,61 @@ When a job completes successfully, the output directory contains several files:
 
 - **`run_evo.log`**: A detailed log file containing the execution trace and processing progress for each sequence.
 
-- **`input_<sequence_id>_logits.npy`**: For each sequence in your input FASTA file, a NumPy file containing the model's logits (raw output scores). The filename includes the sequence identifier from the FASTA header.
+- **`<input_basename>_summary_table.txt`**: A summary table containing metadata for all processed sequences with columns: `seq_id`, `start`, `end`, `total_log_likelihood`. The start and end coordinates show the genomic regions that were analyzed (either from the query table or full sequence), and the total log-likelihood provides an overall score for each sequence.
 
-- **`input_<sequence_id>_embeddings_<layer_name>.npy`**: If you requested embeddings using the `--include_embedding` flag, additional NumPy files containing the embeddings from the specified layers. The filename includes both the sequence identifier and the layer name.
+- **`<input_basename>_processed_ids.txt`**: A simple text file listing the sequence IDs that were processed, one per line.
 
-For example, if your FASTA contains a sequence with header `>Ecoli_gyrA_WT` and you requested embeddings from the `blocks.28.mlp.l3` layer, you would get:
+- **`<input_basename>_<sequence_id>_logits.npy`**: For each sequence in your input FASTA file, a NumPy file containing the model's logits (raw output scores). The filename includes the sequence identifier from the FASTA header. If a query table is provided, logits are restricted to the specified coordinate ranges.
+
+- **`<input_basename>_<sequence_id>_embeddings_<layer_name>.npy`**: If you requested embeddings (using `--output_type logits_and_embedding` or `--output_type embedding`), additional NumPy files containing the embeddings from the specified layers. The filename includes both the sequence identifier and the layer name. If a query table is provided, embeddings are restricted to the specified coordinate ranges.
+
+For example, if your FASTA contains a sequence with header `>Ecoli_gyrA_WT` and you requested both logits and embeddings from the `blocks.28.mlp.l3` layer, you would get:
 - `input_Ecoli_gyrA_WT_logits.npy` - the logits for this sequence
 - `input_Ecoli_gyrA_WT_embeddings_blocks_28_mlp_l3.npy` - the embeddings from the specified layer
 
-The logits are always included in the output, while embeddings are only generated when explicitly requested.
+The output files generated depend on your `OUTPUT_TYPE` setting: `logits` (logits only), `logits_and_embedding` (both), `embedding` (embeddings only), or `summary_only` (summary table only).
 
+## Query Table Feature
+
+The system supports an optional **query table** that allows you to specify which genomic regions to analyze for each sequence. This is useful when you want to focus the model's analysis on specific coordinate ranges rather than processing entire sequences.
+
+### Query Table Format
+
+The query table is a TSV (tab-separated values) file with three columns:
+- `seq_id`: Sequence identifier (must match FASTA headers)
+- `start`: Start position (1-indexed, inclusive)
+- `end`: End position (1-indexed, inclusive)
+
+Example (`examples/test_query.tsv`):
+```
+seq_id	start	end
+seq1	5	15
+seq2	1	10
+```
+
+### Using Query Tables
+
+You can specify a query table either globally in `config.mk` or per-job:
+
+**Global Configuration:**
+```makefile
+# in config.mk
+QUERY_TABLE?=examples/my_query.tsv
+```
+
+**Per-Job:**
+```bash
+evo_gcp submit --job my-job --input_fasta examples/test.fasta --query_table examples/test_query.tsv
+```
+
+### Query Table Behavior
+
+When a query table is provided:
+- Only sequences listed in the query table are processed
+- Logits and embeddings are restricted to the specified coordinate ranges  
+- The system validates that all FASTA sequence IDs exist in the query table
+- Total log-likelihood is still calculated for the entire sequence, but outputs (logits/embeddings) only cover the query ranges
+- The summary table shows the coordinate ranges that were actually processed
 
 ## Parameters
 
@@ -213,9 +258,10 @@ Here is a list of all available parameters and their descriptions (see `config.m
 | `JOB`                  | A unique string identifier for a job.                       |
 | `JOB_VERSION`          | The job version, allowing the same job to be run multiple times. |
 | `INPUT_FASTA`          | The input FASTA file for a job.                             |
+| `QUERY_TABLE`          | Optional TSV file specifying genomic regions to analyze for each sequence. |
 | `WAIT`                 | When used with `submit`, blocks until the job completes.    |
-| `INCLUDE_EMBEDDING`    | Whether to include embeddings in the output.                |
-| `EMBEDDING_LAYERS`     | Specific layers to use for embeddings.                      |
+| `OUTPUT_TYPE`          | Type of output to generate: `logits`, `logits_and_embedding`, `embedding`, or `summary_only`. |
+| `EMBEDDING_LAYERS`     | Specific layers to use for embeddings (required when OUTPUT_TYPE includes embeddings). |
 | `JOBS_DIR`             | The local directory for storing downloaded job results.     |
 
 ## Implementation Details
@@ -232,3 +278,13 @@ This design provides a simple, accessible interface without requiring knowledge 
 -   `jobs/`: The default local directory for storing downloaded job results.
 -   `examples/`: Contains sample FASTA files for testing.
 -   `docs/`: Contains additional documentation.
+
+## Version History
+
+### Version 0.91
+- **Query Table Feature**: Added support for optional TSV query tables to restrict analysis to specific genomic coordinate ranges, with logits and embeddings respecting the specified boundaries
+- **Output Type System**: Replaced `INCLUDE_EMBEDDING` with `OUTPUT_TYPE` parameter supporting four modes: `logits`, `logits_and_embedding`, `embedding`, `summary_only`
+- **Summary Tables**: Added automatic generation of summary tables with sequence metadata and total log-likelihood scores
+- **Docker Updates**: Changed base image to `nvidia/cuda` and added explicit `linux/amd64` platform specification
+- **Installation Changes**: Modified default install location from `/usr/local/bin` to `~/.local/bin` for user-local installation
+

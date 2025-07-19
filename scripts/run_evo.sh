@@ -12,24 +12,31 @@ CHECKPOINT_DIR=$MNT_DIR/models
 CHECKPOINT_PATH=$CHECKPOINT_DIR/$MODEL_NAME/$MODEL_NAME.pt
 
 FASTA_FILE=$JOB_DIR/input.fasta
+QUERY_TABLE=$JOB_DIR/query_table.csv
 
 echo "Running job: $JOB"
 echo "Mount directory: $MNT_DIR"
 echo "Input fasta file: $FASTA_FILE"
+echo "Query table: $QUERY_TABLE"
 echo "Output directory: $OUTPUT_DIR"
 echo "Scripts directory: $SCRIPTS_DIR"
 echo "Model name: $MODEL_NAME"
 echo "Checkpoint path: $CHECKPOINT_PATH"
-echo "Include embedding: $INCLUDE_EMBEDDING"
+echo "Output type: $OUTPUT_TYPE"
 echo "Embedding layers: $EMBEDDING_LAYERS"
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 mkdir -p $OUTPUT_DIR
 
 # Construct arguments for run_evo.py
-SCRIPT_ARGS="--fasta_file $FASTA_FILE --model_name $MODEL_NAME --checkpoint_path $CHECKPOINT_PATH --output_dir $OUTPUT_DIR"
+SCRIPT_ARGS="--fasta_file $FASTA_FILE --model_name $MODEL_NAME --checkpoint_path $CHECKPOINT_PATH"
+SCRIPT_ARGS="$SCRIPT_ARGS --output_dir $OUTPUT_DIR"
+SCRIPT_ARGS="$SCRIPT_ARGS --output_type $OUTPUT_TYPE"
 
-if [ "$INCLUDE_EMBEDDING" = "true" ]; then
-    SCRIPT_ARGS="$SCRIPT_ARGS --include_embedding"
+if [ -f "$QUERY_TABLE" ]; then
+    SCRIPT_ARGS="$SCRIPT_ARGS --query_table $QUERY_TABLE"
+fi
+
+if [ "$OUTPUT_TYPE" = "logits_and_embedding" ] || [ "$OUTPUT_TYPE" = "embedding" ]; then
     if [ -n "$EMBEDDING_LAYERS" ]; then
         SCRIPT_ARGS="$SCRIPT_ARGS --embedding_layers $EMBEDDING_LAYERS"
     fi

@@ -10,8 +10,8 @@ def main():
     parser.add_argument("--image_uri", required=True, help="The Docker image URI (e.g., \"gcr.io/relman-yaffe/evo2\").")
     parser.add_argument("--job_env", required=True, help="Value for the JOB environment variable.")
     parser.add_argument("--model_name_env", required=True, help="Value for the MODEL_NAME environment variable.")
-    parser.add_argument("--include_embedding_env", action='store_true', help="Include embeddings in the output.")
-    parser.add_argument("--embedding_layers_env", default="", help="Space-separated list of embedding layers. Required if --include_embedding_env is set.")
+    parser.add_argument("--output_type_env", default="logits", help="Output type: logits, logits_and_embedding, or embedding.")
+    parser.add_argument("--embedding_layers_env", default="", help="Space-separated list of embedding layers. Required if output_type_env includes embeddings.")
     parser.add_argument("--run_script_path", required=True, help="Path to the execution script within the container (e.g., \"scripts/run_evo2.sh\").")
 
     # Optional arguments with defaults from test.json
@@ -24,8 +24,13 @@ def main():
 
     args = parser.parse_args()
 
-    if args.include_embedding_env and not args.embedding_layers_env:
-        parser.error("--embedding_layers_env is required when --include_embedding_env is set.")
+    # make sure output_type_env is one of the allowed values
+    if args.output_type_env not in ['logits', 'logits_and_embedding', 'embedding', 'summary_only']:
+        parser.error(f"Invalid output_type_env: {args.output_type_env}. Allowed values are: logits, logits_and_embedding, embedding, summary_only.")
+
+    # make sure embedding_layers_env is provided if output_type_env includes embeddings
+    if args.output_type_env in ['logits_and_embedding', 'embedding'] and not args.embedding_layers_env:
+        parser.error("--embedding_layers_env is required when output_type_env includes embeddings.")
 
     # Construct the command for the container
     # The script path is relative to the mount point /mnt/disks/share
@@ -56,8 +61,8 @@ def main():
                             "MNT_DIR": "/mnt/disks/share",
                             "JOB": args.job_env,
                             "MODEL_NAME": args.model_name_env,
-                            "INCLUDE_EMBEDDING": "true" if args.include_embedding_env else "false",
-                            "EMBEDDING_LAYERS": args.embedding_layers_env if args.include_embedding_env and args.embedding_layers_env else "",
+                            "OUTPUT_TYPE": args.output_type_env,
+                            "EMBEDDING_LAYERS": args.embedding_layers_env if args.output_type_env in ['logits_and_embedding', 'embedding'] and args.embedding_layers_env else "",
                             "CUDA_VISIBLE_DEVICES": cuda_visible_devices
                         }
                     },

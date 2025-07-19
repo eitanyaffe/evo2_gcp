@@ -21,7 +21,7 @@ test_long:
 	$(MAKE) submit \
 		INPUT_FASTA=$(INPUT_FASTA_TEST) \
 		JOB=evo-large \
-		INCLUDE_EMBEDDING=false \
+		OUTPUT_TYPE=logits \
 		MACHINE_TYPE=a3-highgpu-8g \
 		ACCELERATOR_TYPE=nvidia-h100-80gb \
 		ACCELERATOR_COUNT=8 \
@@ -35,7 +35,7 @@ test_medium:
 	$(MAKE) submit \
 		INPUT_FASTA=$(INPUT_FASTA_TEST_MEDIUM) \
 		JOB=evo-medium \
-		INCLUDE_EMBEDDING=false \
+		OUTPUT_TYPE=logits \
 		JOB_VERSION=v5
 
 #####################################################################################
@@ -77,6 +77,7 @@ env:
 	mkdir -p jobs/$(JOB_TAG)
 	cp $(INPUT_FASTA) jobs/$(JOB_TAG)/input.fasta
 	docker run -it \
+		--platform=linux/amd64 \
 		-v /tmp:/tmp \
 		-v $(PWD):/work \
 		-w /work \
@@ -86,7 +87,7 @@ env:
 		-e DOCKER_IMAGE=$(DOCKER_IMAGE) \
 		-e JOB_TAG=$(JOB_TAG) \
 		-e MODEL_NAME=$(MODEL_NAME) \
-		-e INCLUDE_EMBEDDING=$(INCLUDE_EMBEDDING) \
+		-e OUTPUT_TYPE=$(OUTPUT_TYPE) \
 		-e EMBEDDING_LAYERS="$(EMBEDDING_LAYERS)" \
 		-e MACHINE_TYPE=$(MACHINE_TYPE) \
 		-e ACCELERATOR_TYPE=$(ACCELERATOR_TYPE) \

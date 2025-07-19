@@ -12,7 +12,6 @@ LOCATION?=us-central1
 # docker
 #####################################################################################
 
-
 # local docker image name
 IMAGE_NAME?=evo2
 
@@ -41,13 +40,16 @@ BUCKET_NAME?=$(GCP_PROJECT)-$(USER)-evo2
 #####################################################################################
 
 # job label (unique string identifier)
-JOB?=evo-test
+JOB?=evo-$(USER)-test
 
 # job version (allows to submit the same job multiple times)
 JOB_VERSION?=v1
 
 # input fasta file of job
 INPUT_FASTA?=examples/test.fasta
+
+# query table: table to restrict nt-level analysis to specified regions
+QUERY_TABLE?=none
 
 # wait for job to complete
 WAIT?=true
@@ -59,7 +61,10 @@ WAIT?=true
 # Evo 2 model name
 MODEL_NAME?=evo2_7b
 
-INCLUDE_EMBEDDING?=true
+# output type: logits, logits_and_embedding, embedding or summary_only
+OUTPUT_TYPE?=logits
+
+# embedding layers to extract (only used if OUTPUT_TYPE includes embeddings)
 EMBEDDING_LAYERS?=blocks.28.mlp.l3
 
 # machine type

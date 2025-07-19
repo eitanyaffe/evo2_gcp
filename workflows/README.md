@@ -27,7 +27,7 @@ A comprehensive pipeline for analyzing codon variants to compare evolutionary pr
 - Calculates log-likelihood scores from Evo2 model predictions
 - Creates comparative visualizations
 
-**Documentation**: See [`strands/strands.md`](strands/strands.md) for detailed usage instructions.
+**Documentation**: See [`strands/README.md`](strands/README.md) for detailed usage instructions.
 
 **Quick Start**:
 ```bash

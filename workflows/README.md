@@ -17,7 +17,7 @@ Workflows are organized into subdirectories, each containing:
 
 ### `strands/` - Reverse Complement Analysis Pipeline
 
-A comprehensive pipeline for analyzing codon variants to compare evolutionary pressures between DNA strands.
+A comprehensive pipeline for analyzing codon variants to compare evolutionary pressures between DNA strands. By default, focuses on the *gyrA* gene in *E. coli* as an example that can be easily modified for other genes/organisms.
 
 **Purpose**: Compares variant likelihoods between forward and reverse complement sequences to understand strand-specific evolutionary constraints.
 
@@ -32,7 +32,7 @@ A comprehensive pipeline for analyzing codon variants to compare evolutionary pr
 **Quick Start**:
 ```bash
 cd workflows/strands
-./runner.sh 83  # Analyze position 83
+./runner.sh 83  # Analyze amino acid position 83
 ```
 
 ## Workflow Structure

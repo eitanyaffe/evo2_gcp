@@ -4,3 +4,4 @@ activations_debug.log
 examples/large_test.fasta
 examples/medium_test.fasta
 .DS_Store
+/workflows/strands/output

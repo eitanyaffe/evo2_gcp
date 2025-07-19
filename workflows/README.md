@@ -8,16 +8,16 @@ Each workflow is designed to address a particular research question or analysis 
 
 Workflows are organized into subdirectories, each containing:
 
-- Complete analysis pipeline scripts
+- Complete analysis workflow scripts
 - Input data files and templates
 - Documentation specific to that workflow
 - Output directories for results
 
 ## Available Workflows
 
-### `strands/` - Strand Analysis Pipeline
+### `strands/` - Strand Analysis Workflow
 
-An example pipeline for analyzing codon variants to compare DNA strands. By default, focuses on the *gyrA* gene in *E. coli* as an example that can be easily modified for other genes/organisms.
+An example workflow (pipeline) for analyzing codon variants to compare DNA strands. By default, focuses on the *gyrA* gene in *E. coli* as an example that can be easily modified for other genes/organisms.
 
 See [`strands/README.md`](strands/README.md) for detailed usage instructions.
 

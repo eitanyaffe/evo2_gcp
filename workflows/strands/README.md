@@ -1,12 +1,12 @@
-# Reverse Complement Analysis Pipeline
+# Reverse Complement Analysis Workflow
 
 ## Overview
-This pipeline analyzes codon variants at a specific amino acid position to compare variant likelihoods between strands.
+This workflow (pipeline) analyzes codon variants at a specific amino acid position to compare variant likelihoods between strands.
 
 ## Files and Functions
 
-### Core Pipeline
-- `runner.sh` - Main pipeline script that orchestrates all steps
+### Core Workflow
+- `runner.sh` - Main workflow script that orchestrates all steps
 - `input/gene_variants.fasta` - Input gene sequences for analysis
 - `input/codon_table` - Codon to amino acid mapping table
 
@@ -24,7 +24,7 @@ This pipeline analyzes codon variants at a specific amino acid position to compa
   - `output/compare_strands_<POS>.tab` - Strand comparison table
   - `figures/P_vs_M_strands_<POS>.pdf` - Output scatter plot
 
-## Pipeline Steps
+## Workflow Steps
 1. Generate all 2x64 codon variants at specified position (both forward and reverse complement)
 2. Submit variants to cloud evolutionary model service (`evo_gcp`)
 3. Download model predictions as logit files
@@ -32,7 +32,7 @@ This pipeline analyzes codon variants at a specific amino acid position to compa
 5. Create scatter plot comparing strand preferences
 
 ## Usage
-Run the pipeline with a position parameter:
+Run the workflow with a position parameter:
 ```bash
 ./runner.sh <POS>
 ```

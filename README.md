@@ -277,7 +277,7 @@ This design provides a simple, accessible interface without requiring knowledge 
 -   `config.mk`: Contains default configuration variables (e.g., `PROJECT_ID`, `BUCKET_NAME`).
 -   `jobs/`: The default local directory for storing downloaded job results.
 -   `examples/`: Contains sample FASTA files for testing.
--   `workflows/`: Analysis pipelines. See [`workflows/README.md`](workflows/README.md).
+-   `workflows/`: Analysis workflows (pipelines). See [`workflows/README.md`](workflows/README.md).
 -   `docs/`: Contains additional documentation.
 
 ## Version History
@@ -286,7 +286,7 @@ This design provides a simple, accessible interface without requiring knowledge 
 - **Query Table Feature**: Added support for optional TSV query tables to restrict analysis to specific genomic coordinate ranges, with logits and embeddings respecting the specified boundaries
 - **Output Type System**: Replaced `INCLUDE_EMBEDDING` with `OUTPUT_TYPE` parameter supporting four modes: `logits`, `logits_and_embedding`, `embedding`, `summary_only`
 - **Summary Tables**: Added automatic generation of summary tables with sequence metadata and total log-likelihood scores
-- **Analysis Workflows**: Added `workflows/` directory with specialized analysis pipelines, starting with strand comparison analysis
+- **Analysis Workflows**: Added `workflows/` directory with specialized analysis workflows, starting with strand comparison analysis
 - **Docker Updates**: Changed base image to `nvidia/cuda` and added explicit `linux/amd64` platform specification
 - **Installation Changes**: Modified default install location from `/usr/local/bin` to `~/.local/bin` for user-local installation
 

@@ -69,6 +69,36 @@ download_compare:
 	$(MAKE) download JOB=evo-combined JOB_VERSION=v9
 
 #####################################################################################
+# steering vector examples
+#####################################################################################
+
+STEERING_VECTOR_FILE_EXAMPLE?=examples/steering_vector.tsv
+STEERING_LAYER_EXAMPLE?=blocks.28.mlp.l3
+STEERING_SCALES_EXAMPLE?=1,-1
+
+# run evo with steering vector example
+test_steering:
+	$(MAKE) submit \
+		INPUT_FASTA=examples/test.fasta \
+		JOB=evo-steering \
+		OUTPUT_TYPE=logits \
+		STEERING_LAYER=$(STEERING_LAYER_EXAMPLE) \
+		STEERING_VECTOR_FILE=$(STEERING_VECTOR_FILE_EXAMPLE) \
+		STEERING_SCALES="$(STEERING_SCALES_EXAMPLE)" \
+		JOB_VERSION=v1
+
+# download steering results
+download_steering:
+	$(MAKE) download JOB=evo-steering JOB_VERSION=v1
+
+# plot steering results
+plot_steering:
+	Rscript scripts/steering_example.r
+
+# download and plot steering results
+analyze_steering: download_steering plot_steering
+
+#####################################################################################
 # open local container for testing and debugging
 #####################################################################################
 

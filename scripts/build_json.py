@@ -12,6 +12,8 @@ def main():
     parser.add_argument("--model_name_env", required=True, help="Value for the MODEL_NAME environment variable.")
     parser.add_argument("--output_type_env", default="logits", help="Output type: logits, logits_and_embedding, or embedding.")
     parser.add_argument("--embedding_layers_env", default="", help="Space-separated list of embedding layers. Required if output_type_env includes embeddings.")
+    parser.add_argument("--steering_layer_env", default="", help="Layer name to apply steering vector to.")
+    parser.add_argument("--steering_scales_env", default="", help="Comma-separated steering scales.")
     parser.add_argument("--run_script_path", required=True, help="Path to the execution script within the container (e.g., \"scripts/run_evo2.sh\").")
 
     # Optional arguments with defaults from test.json
@@ -63,6 +65,8 @@ def main():
                             "MODEL_NAME": args.model_name_env,
                             "OUTPUT_TYPE": args.output_type_env,
                             "EMBEDDING_LAYERS": args.embedding_layers_env if args.output_type_env in ['logits_and_embedding', 'embedding'] and args.embedding_layers_env else "",
+                            "STEERING_LAYER": args.steering_layer_env,
+                            "STEERING_SCALES": args.steering_scales_env,
                             "CUDA_VISIBLE_DEVICES": cuda_visible_devices
                         }
                     },

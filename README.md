@@ -185,6 +185,85 @@ QUERY_TABLE?=examples/my_query.tsv
 evo_gcp submit --job my-job --input_fasta examples/test.fasta --query_table examples/test_query.tsv
 ```
 
+## Steering Vectors
+
+The system supports **steering vectors** that allow you to modify the model's internal representations during inference. This enables you to guide the model's behavior in specific directions, such as biasing towards certain biological outcomes or exploring model interpretability.
+
+### What are Steering Vectors?
+
+Steering vectors are numerical vectors that are added to the model's activations at a specific layer during forward pass. By scaling these vectors, you can control the strength and direction of the intervention. The system automatically generates results for both unsteered (baseline) and steered conditions.
+
+### Steering Vector Format
+
+Steering vectors are provided as tab-delimited files with one floating-point value per line (first column values):
+
+Example (`examples/steering_vector.tsv`):
+```
+0.049671
+-0.013826
+0.064769
+0.152303
+...
+```
+
+### Using Steering Vectors
+
+You can specify steering parameters either in `config.mk` or per-job:
+
+**Global Configuration:**
+```makefile
+# in config.mk
+STEERING_LAYER?=blocks.28.mlp.l3
+STEERING_VECTOR_FILE?=examples/my_steering_vector.tsv
+STEERING_SCALES?=1.0,2.0
+```
+
+**Per-Job:**
+```bash
+evo_gcp submit --job my-steering-job \
+  --input_fasta examples/test.fasta \
+  --steering_layer blocks.28.mlp.l3 \
+  --steering_vector_file examples/steering_vector.tsv \
+  --steering_scales "0.5,1.0,2.0"
+```
+
+**Quick Example:**
+```bash
+# Run the built-in steering example
+make test_steering
+```
+
+### Multiple Steering Scales
+
+You can test multiple steering scales in a single job by providing comma-separated values:
+
+```bash
+evo_gcp submit --job multi-scale-test \
+  --input_fasta examples/test.fasta \
+  --steering_layer blocks.28.mlp.l3 \
+  --steering_vector_file examples/steering_vector.tsv \
+  --steering_scales "0.5,1.0,2.0,5.0"
+```
+
+This will generate outputs for:
+- **Unsteered (baseline)**: `*_summary_unsteered.txt`, `*_logits_unsteered.npy`
+- **Scale 0.5**: `*_summary_scale_0.5.txt`, `*_logits_scale_0.5.npy`  
+- **Scale 1.0**: `*_summary_scale_1.0.txt`, `*_logits_scale_1.0.npy`
+- **Scale 2.0**: `*_summary_scale_2.0.txt`, `*_logits_scale_2.0.npy`
+- **Scale 5.0**: `*_summary_scale_5.0.txt`, `*_logits_scale_5.0.npy`
+
+### Steering Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `STEERING_LAYER` | Layer name to apply steering vector to (e.g., `blocks.28.mlp.l3`) |
+| `STEERING_VECTOR_FILE` | Path to tab-delimited file containing steering vector values |
+| `STEERING_SCALES` | Comma-separated scale factors for the steering vector |
+
+### Example Steering Vector
+
+The repository includes `examples/steering_vector.tsv` - a 4096-dimensional example steering vector with random values from a normal distribution. This can be used for testing or as a template for creating your own steering vectors.
+
 ## Parameters
 
 You can customize the behavior of `evo_gcp` by modifying its parameters. There are two ways to set them:
@@ -249,6 +328,9 @@ Here is a list of all available parameters and their descriptions (see `config.m
 | `WAIT`                 | When used with `submit`, blocks until the job completes.    |
 | `OUTPUT_TYPE`          | Type of output to generate: `logits`, `logits_and_embedding`, `embedding`, or `summary_only`. |
 | `EMBEDDING_LAYERS`     | Specific layers to use for embeddings (required when OUTPUT_TYPE includes embeddings). |
+| `STEERING_LAYER`       | Layer name to apply steering vector to (optional). |
+| `STEERING_VECTOR_FILE` | Path to tab-delimited file containing steering vector values (optional). |
+| `STEERING_SCALES`      | Comma-separated scale factors for the steering vector (optional). |
 | `JOBS_DIR`             | The local directory for storing downloaded job results.     |
 
 ## Implementation Details
@@ -276,4 +358,5 @@ This design provides a simple, accessible interface without requiring knowledge 
 - **Analysis Workflows**: Added `workflows/` directory with specialized analysis workflows, starting with strand comparison analysis
 - **Docker Updates**: Changed base image to `nvidia/cuda` and added explicit `linux/amd64` platform specification
 - **Installation Changes**: Modified default install location from `/usr/local/bin` to `~/.local/bin` for user-local installation
+- **Steering Vectors**: Added support for steering vectors to modify model internal representations during inference
 

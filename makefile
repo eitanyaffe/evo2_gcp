@@ -85,6 +85,11 @@ upload_query_table:
 ifneq ($(QUERY_TABLE),none)
 	gsutil -m cp $(QUERY_TABLE) gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/query_table.csv
 endif
+
+upload_steering_vector:
+ifneq ($(STEERING_VECTOR_FILE),)
+	gsutil -m cp $(STEERING_VECTOR_FILE) gs://$(BUCKET_NAME)/jobs/$(JOB_TAG)/steering_vector.tsv
+endif
 	
 # build json file
 build_json:
@@ -97,13 +102,15 @@ build_json:
 		--model_name_env $(MODEL_NAME) \
 		--output_type_env $(OUTPUT_TYPE) \
 		$(if $(EMBEDDING_LAYERS),--embedding_layers_env "$(EMBEDDING_LAYERS)",) \
+		$(if $(STEERING_LAYER),--steering_layer_env "$(STEERING_LAYER)",) \
+		$(if $(STEERING_SCALES),--steering_scales_env "$(STEERING_SCALES)",) \
 		--machine_type $(MACHINE_TYPE) \
 		--accelerator_type $(ACCELERATOR_TYPE) \
 		--accelerator_count $(ACCELERATOR_COUNT) \
 		--run_script_path $(SCRIPT_PATH)
 
 # submit job
-submit: upload_code upload_fasta upload_query_table build_json
+submit: upload_code upload_fasta upload_query_table upload_steering_vector build_json
 	bash submit_job.sh \
 		--job-name $(JOB_TAG) \
 		--location $(LOCATION) \

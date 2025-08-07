@@ -67,6 +67,11 @@ OUTPUT_TYPE?=logits
 # embedding layers to extract (only used if OUTPUT_TYPE includes embeddings)
 EMBEDDING_LAYERS?=blocks.28.mlp.l3
 
+# steering vector parameters (optional)
+STEERING_LAYER?=
+STEERING_VECTOR_FILE?=
+STEERING_SCALES?=
+
 # machine type
 MACHINE_TYPE?=a3-highgpu-1g
 

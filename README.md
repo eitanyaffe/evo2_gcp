@@ -245,6 +245,17 @@ evo_gcp submit --job multi-scale-test \
   --steering_scales "0.5,1.0,2.0,5.0"
 ```
 
+**Note**: When using negative values in steering scales, use the equals sign format to avoid argument parsing issues:
+
+```bash
+# For negative values, use = instead of space
+evo_gcp submit --job negative-steering \
+  --input_fasta examples/test.fasta \
+  --steering_layer blocks.28.mlp.l3 \
+  --steering_vector_file examples/steering_vector.tsv \
+  --steering_scales="-0.5,1.0,2.0"
+```
+
 This will generate outputs for:
 - **Unsteered (baseline)**: `*_summary_unsteered.txt`, `*_logits_unsteered.npy`
 - **Scale 0.5**: `*_summary_scale_0.5.txt`, `*_logits_scale_0.5.npy`  

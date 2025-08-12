@@ -135,14 +135,26 @@ def main():
                 embedding_layers.append(layer)
         args.embedding_layers = embedding_layers
 
-    # handle comma-separated steering scales
+    # handle comma-separated steering scales (support 'n' prefix for negatives, e.g., n0.5 -> -0.5)
     steering_scales = []
     if args.steering_scale:
         for scale_str in args.steering_scale.split(','):
-            scale_str = scale_str.strip()
-            if scale_str:
+            token = scale_str.strip()
+            if not token:
+                continue
+            # allow 'n' or 'N' prefix to denote a negative number without using '-'
+            if token[0] in ('n', 'N'):
+                number_part = token[1:].strip()
+                if number_part == '':
+                    parser.error(f"invalid steering scale: {scale_str}")
                 try:
-                    steering_scales.append(float(scale_str))
+                    value = -float(number_part)
+                except ValueError:
+                    parser.error(f"invalid steering scale: {scale_str}")
+                steering_scales.append(value)
+            else:
+                try:
+                    steering_scales.append(float(token))
                 except ValueError:
                     parser.error(f"invalid steering scale: {scale_str}")
     if not steering_scales:

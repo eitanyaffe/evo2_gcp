@@ -74,7 +74,7 @@ download_compare:
 
 STEERING_VECTOR_FILE_EXAMPLE?=examples/steering_vector.tsv
 STEERING_LAYER_EXAMPLE?=blocks.28.mlp.l3
-STEERING_SCALES_EXAMPLE?=1,-1
+STEERING_SCALES_EXAMPLE?=n1,1
 
 # run evo with steering vector example
 test_steering:

@@ -302,8 +302,10 @@ def main():
                 for layer_name, emb_tensor in embeddings.items():
                     if layer_name not in all_embeddings:
                         all_embeddings[layer_name] = []
+                    # remove batch dimension if present
+                    emb_view = emb_tensor[0] if emb_tensor.dim() == 3 else emb_tensor
                     # Detach embeddings, move to CPU, convert to float32, then to NumPy
-                    query_embeddings = emb_tensor[query_start_idx:query_end_idx, :].detach().cpu().to(torch.float32).numpy()
+                    query_embeddings = emb_view[query_start_idx:query_end_idx, :].detach().cpu().to(torch.float32).numpy()
                     all_embeddings[layer_name].append(query_embeddings)
                     print(f"      embeddings from {layer_name} shape: {query_embeddings.shape} (query range {start}-{end})")
 
